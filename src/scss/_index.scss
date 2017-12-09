@@ -1,0 +1,59 @@
+body#index {
+  &,
+  main,
+  #wrapper {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  section {
+    padding: 1rem;
+  }
+
+  #wrapper {
+    padding: 1rem;
+    display: grid;
+
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: 2fr 3fr 1fr;
+    grid-gap: 1rem;
+
+    grid-template-areas:
+      'page-status camera user-text'
+      'video-analysis camera audio-analysis'
+      '. bot-text .';
+  }
+
+  #page-status-wrap {
+    background-color: pink;
+    grid-area: page-status;
+    // display: none;
+  }
+
+  #video-analysis-wrap {
+    background-color: palevioletred;
+    grid-area: video-analysis;
+    // display: none;
+  }
+
+  #camera-wrap {
+    background-color: yellow;
+    grid-area: camera;
+  }
+
+  #bot-text-wrap {
+    background-color: papayawhip;
+    grid-area: bot-text;
+  }
+
+  #user-text-wrap {
+    background-color: lightblue;
+    grid-area: user-text;
+  }
+
+  #audio-analysis-wrap {
+    background-color: violet;
+    grid-area: audio-analysis;
+  }
+}

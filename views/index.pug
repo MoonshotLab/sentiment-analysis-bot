@@ -1,0 +1,23 @@
+extends layout.pug
+
+block content
+  div#wrapper
+    section#page-status-wrap
+      pre
+        p#video-status Video Status
+        p#audio-status Audio Status
+    section#video-analysis-wrap
+      h4 Video Analysis
+    section#camera-wrap
+      h4 Camera
+      div#camera-root
+    section#bot-text-wrap
+      h4 "Bot text"
+    section#user-text-wrap
+      h4 "User text"
+    section#audio-analysis-wrap
+      h4 Audio Analysis
+
+block footer_scripts
+  script(src='js/lib/jquery.min.js')
+  script(src='js/main.bundle.js')
