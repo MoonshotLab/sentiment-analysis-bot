@@ -39,8 +39,10 @@ function hookUpDetectorEvents(detector) {
     timestamp
   ) {
     frames++;
+    // console.log(facelessFrames, facelessFramesTolerance);
     if (frames % 5 === 0) {
       if (faces.length > 0) {
+        ui.keepAlive();
         if (faceInFrame !== true) {
           setFaceStatus(true);
           ui.setVideoAnalysis('<h4>Face in frame</h4>');
@@ -52,10 +54,6 @@ function hookUpDetectorEvents(detector) {
         if (faceInFrame === true) {
           setFaceStatus(false);
           ui.setVideoAnalysis('<h4>No face in frame</h4>');
-          if (facelessFrames > facelessFramesTolerance) {
-            // console.log('stop listening');
-            audio.stopListening();
-          }
           // audio.hideSection();
         }
       }

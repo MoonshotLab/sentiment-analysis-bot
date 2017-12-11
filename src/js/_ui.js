@@ -3,6 +3,7 @@ const NProgress = require('nprogress');
 
 const audio = require('./_audio');
 const video = require('./_video');
+const screensaver = require('./_screensaver');
 
 const $pageStatusSection = $('#page-status-wrap');
 const $videoStatus = $('#video-status');
@@ -23,11 +24,15 @@ const $userText = $('#user-text');
 const $audioAnalysisSection = $('#audio-analysis-wrap');
 const $audioAnalysisWrap = $('#audio-analysis');
 
+let screensaverTimeout = null;
+let screensaverTimeoutLength = 30 * 1000; // ms
+
 function asyncInit() {
   return video
     .asyncSetupCamera($cameraRoot)
     .then(audio.asyncSetupAudio)
-    .then(video.startWatching);
+    .then(video.startWatching)
+    .then(keepAlive);
 }
 
 function setVideoStatus(status = '') {
@@ -115,6 +120,26 @@ function endProgress() {
   return;
 }
 
+// stave off screensaver
+function keepAlive() {
+  if (screensaver.isActivated()) {
+    wakeUp();
+  }
+
+  clearTimeout(screensaverTimeout);
+  screensaverTimeout = setTimeout(goToSleep, screensaverTimeoutLength);
+}
+
+// start screensaver, reset everything
+function goToSleep() {
+  screensaver.start();
+  audio.stopListening();
+}
+
+function wakeUp() {
+  screensaver.stop();
+}
+
 exports.asyncInit = asyncInit;
 exports.setVideoStatus = setVideoStatus;
 exports.setAudioStatus = setAudioStatus;
@@ -126,3 +151,5 @@ exports.setBotText = setBotText;
 exports.setUserText = setUserText;
 exports.startProgress = startProgress;
 exports.endProgress = endProgress;
+exports.keepAlive = keepAlive;
+exports.wakeUp = wakeUp;

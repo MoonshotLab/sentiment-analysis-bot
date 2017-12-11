@@ -12,7 +12,7 @@ let keepRecording = false;
 let recording = false;
 let silenceDuration = 0; // ms
 
-const volThreshold = 25; // softer than this will be considered silence
+const volThreshold = 20; // softer than this will be considered silence
 
 const detectAudioInterval = 500; // ms
 const waitAfterVolumeLength = 1 * 1000; // ms
@@ -199,11 +199,13 @@ function detectAudio() {
 }
 
 function startListening() {
+  console.log('start listening');
   recordingInterval = setInterval(detectAudio, detectAudioInterval);
   ui.setAudioStatus('Listening');
 }
 
 function stopListening() {
+  console.log('stop listening');
   clearInterval(recordingInterval);
   recordingInterval = null;
   ui.setAudioStatus('Waiting');
