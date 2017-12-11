@@ -185,7 +185,11 @@ function detectAudio() {
       }
     }
   } else {
-    startMediaRecorder();
+    try {
+      startMediaRecorder();
+    } catch (e) {
+      console.log(e);
+    }
 
     if (vol > volThreshold) {
       keepRecording = true;
@@ -219,28 +223,68 @@ function stopMediaRecorder() {
   silenceDuration = 0;
 }
 
+function asyncGetWebcamAudioInfo() {
+  return new Promise((resolve, reject) => {
+    navigator.mediaDevices.enumerateDevices().then(devices => {
+      let defaultDevice = null;
+      devices.map(device => {
+        if (device.kind === 'audioinput') {
+          if (device.label === 'HD Webcam C615') {
+            resolve(device);
+          } else if (device.deviceId === 'default') {
+            defaultDevice = device;
+          }
+        }
+      });
+      resolve(defaultDevice); // if we can't find webcam, return default
+    });
+  });
+}
+
 function asyncSetupAudio() {
   return new Promise((resolve, reject) => {
-    // grab an audio context
     audioContext = new AudioContext();
 
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: {
-          mandatory: {
-            googEchoCancellation: 'false',
-            googAutoGainControl: 'false',
-            googNoiseSuppression: 'false',
-            googHighpassFilter: 'false'
-          },
-          optional: []
-        }
+    asyncGetWebcamAudioInfo()
+      .then(deviceInfo => {
+        console.log(deviceInfo);
+        return navigator.mediaDevices.getUserMedia({
+          audio: {
+            deviceId: {
+              exact: deviceInfo.deviceId
+            }
+            // mandatory: {
+            //   googEchoCancellation: 'false',
+            //   googAutoGainControl: 'false',
+            //   googNoiseSuppression: 'false',
+            //   googHighpassFilter: 'false'
+            // }
+          }
+        });
       })
       .then(setupMediaSource)
       .then(resolve)
-      .catch(err => {
-        reject(err);
+      .catch(e => {
+        reject(e);
       });
+
+    // navigator.mediaDevices
+    //   .getUserMedia({
+    //     audio: {
+    //       mandatory: {
+    //         googEchoCancellation: 'false',
+    //         googAutoGainControl: 'false',
+    //         googNoiseSuppression: 'false',
+    //         googHighpassFilter: 'false'
+    //       },
+    //       optional: []
+    //     }
+    //   })
+    //   .then(setupMediaSource)
+    //   .then(resolve)
+    //   .catch(err => {
+    //     reject(err);
+    //   });
   });
 }
 
