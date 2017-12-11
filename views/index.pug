@@ -8,16 +8,19 @@ block content
         p#audio-status Audio Status
     section#video-analysis-wrap
       h4 Video Analysis
+      div#video-analysis
     section#camera-wrap
-      h4 Camera
+      //- h4 Camera
       div#camera-root
     section#bot-text-wrap
-      h4 "Bot text"
+      h4#bot-text
     section#user-text-wrap
-      h4 "User text"
+      h4#user-text
     section#audio-analysis-wrap
       h4 Audio Analysis
+      div#audio-analysis
 
 block footer_scripts
   script(src='js/lib/jquery.min.js')
+  script(src='https://download.affectiva.com/js/3.2/affdex.js')
   script(src='js/main.bundle.js')

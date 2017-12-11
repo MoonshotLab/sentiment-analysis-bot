@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const Promise = require('bluebird');
 const fs = require('fs-extra');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
@@ -70,6 +71,23 @@ function removeFlacFile(path) {
     });
 }
 
+function formatEmotions(emotions) {
+  const formattedEmotions = {};
+
+  for (let emotion in emotions) {
+    const emotionVal = parseInt(emotions[emotion] * 100) / 100;
+    if (emotionVal > 0.1) formattedEmotions[emotion] = emotionVal;
+  }
+
+  if (Object.keys(formattedEmotions).length === 0) {
+    return {
+      neutral: 1
+    };
+  } else {
+    return formattedEmotions;
+  }
+}
+
 router.post('/', upload.fields(uploadFieldSpec), (req, res) => {
   if (!!req.files && !!req.files.data && req.files.data.length > 0) {
     const blob = req.files.data[0];
@@ -93,9 +111,10 @@ router.post('/', upload.fields(uploadFieldSpec), (req, res) => {
             .emotion(transcription)
             .then(emotions => {
               // emotions is object
+              const formattedEmotions = formatEmotions(emotions);
               res.status(200).send({
                 transcription: transcription,
-                emotions: emotions
+                emotions: formattedEmotions
               });
             })
             .catch(e => {

@@ -8,16 +8,16 @@ body#index {
   }
 
   section {
-    padding: 1rem;
+    padding: 2.5%;
   }
 
   #wrapper {
-    padding: 1rem;
+    padding: 2.5%;
     display: grid;
 
     grid-template-columns: 1fr 2fr 1fr;
-    grid-template-rows: 2fr 3fr 1fr;
-    grid-gap: 1rem;
+    grid-template-rows: 2fr 3fr 2fr;
+    grid-gap: 1%;
 
     grid-template-areas:
       'page-status camera user-text'
@@ -26,34 +26,58 @@ body#index {
   }
 
   #page-status-wrap {
-    background-color: pink;
+    // background-color: pink;
     grid-area: page-status;
     // display: none;
   }
 
   #video-analysis-wrap {
-    background-color: palevioletred;
+    // background-color: palevioletred;
     grid-area: video-analysis;
-    // display: none;
+    display: none;
   }
 
   #camera-wrap {
-    background-color: yellow;
+    // background-color: yellow;
     grid-area: camera;
   }
 
+  #camera-root {
+    display: grid;
+    grid-template-columns: 1fr 6fr 1fr;
+    grid-template-rows: 1fr 6fr 1fr;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+
+    grid-template-areas:
+      '. . .'
+      '. video .'
+      '. . .';
+  }
+
+  #face_video {
+    width: 100%;
+    max-width: 60rem;
+    margin: 0 auto;
+    grid-area: video;
+  }
+
   #bot-text-wrap {
-    background-color: papayawhip;
+    // background-color: papayawhip;
     grid-area: bot-text;
+    display: none;
   }
 
   #user-text-wrap {
-    background-color: lightblue;
+    // background-color: lightblue;
     grid-area: user-text;
+    display: none;
   }
 
   #audio-analysis-wrap {
-    background-color: violet;
+    // background-color: violet;
     grid-area: audio-analysis;
+    display: none;
   }
 }

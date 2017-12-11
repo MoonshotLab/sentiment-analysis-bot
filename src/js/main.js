@@ -1,5 +1,14 @@
+const ui = require('./_ui');
+
 function run() {
-  console.log('hi');
+  ui
+    .asyncInit()
+    .then(() => {
+      console.log('done!');
+    })
+    .catch(e => {
+      console.log('Error', e);
+    });
 }
 
 $(window).on('load', function() {
