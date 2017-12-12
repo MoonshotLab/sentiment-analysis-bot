@@ -62,3 +62,7 @@ keyfile.json
 
 # OSX
 .DS_Store
+
+# Custom
+save/
+db.json

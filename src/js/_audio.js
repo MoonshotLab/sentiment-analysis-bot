@@ -20,6 +20,11 @@ const ambientListeningWindowLength = 15 * 1000; // ms
 
 const showUserTextTimeout = 7.5 * 1000;
 
+function playFromUrl(url) {
+  const sound = new Audio(url);
+  sound.play();
+}
+
 function createAudioMeter(audioContext, clipLevel, averaging, clipLag) {
   const processor = audioContext.createScriptProcessor(512);
   processor.onaudioprocess = volumeAudioProcess;
@@ -293,3 +298,4 @@ function asyncSetupAudio() {
 exports.asyncSetupAudio = asyncSetupAudio;
 exports.startListening = startListening;
 exports.stopListening = stopListening;
+exports.playFromUrl = playFromUrl;

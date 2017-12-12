@@ -15,6 +15,8 @@ app.use(autoReap);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+require('./lib/db').initializeDb();
+
 const port = process.env.PORT || 3000;
 http.listen(port, () => {
   console.log('Server running on port ' + port);
@@ -22,6 +24,7 @@ http.listen(port, () => {
 
 app.use('/', require('./routes/index'));
 app.use('/process', require('./routes/process'));
+app.use('/generate', require('./routes/generate'));
 app.use('*', (req, res) => {
   res.redirect('/');
 });

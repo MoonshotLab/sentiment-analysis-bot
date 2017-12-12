@@ -13,4 +13,5 @@ function run() {
 
 $(window).on('load', function() {
   run();
+  console.log(process.env);
 });
