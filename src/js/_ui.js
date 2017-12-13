@@ -4,6 +4,7 @@ const NProgress = require('nprogress');
 const audio = require('./_audio');
 const video = require('./_video');
 const screensaver = require('./_screensaver');
+const chat = require('./_chat');
 
 const $pageStatusSection = $('#page-status-wrap');
 const $videoStatus = $('#video-status');
@@ -24,15 +25,13 @@ const $userText = $('#user-text');
 const $audioAnalysisSection = $('#audio-analysis-wrap');
 const $audioAnalysisWrap = $('#audio-analysis');
 
-let screensaverTimeout = null;
-let screensaverTimeoutLength = 30 * 1000; // ms
+let userTextTimeout = null;
 
 function asyncInit() {
   return video
     .asyncSetupCamera($cameraRoot)
     .then(audio.asyncSetupAudio)
-    .then(video.startWatching)
-    .then(keepAlive);
+    .then(video.startWatching);
 }
 
 function setVideoStatus(status = '') {
@@ -60,11 +59,18 @@ function setBotText(text = '') {
   $botText.text(text);
 }
 function setUserText(text = '') {
+  clearTimeout(userTextTimeout);
+
   if (text === '') {
     hideSection('user-text-wrap');
   } else {
     showSection('user-text-wrap');
+
+    // reset user text after certain amount of time
+    const timeoutMsPerChar = 200; // adjust?
+    setTimeout(setUserText, text.length * 200, '');
   }
+
   $userText.text(text);
 }
 
@@ -77,37 +83,44 @@ function setAudioAnalysis(html = '') {
   $audioAnalysisWrap.html(html);
 }
 
-function getSectionByName(sectionName = null) {
-  if (sectionName === null) {
-    console.log('Must provide section name to show');
-    return null;
-  }
-
-  switch (sectionName) {
-    case 'video-analysis':
-      return $videoAnalysisWrap;
-      break;
-    case 'audio-analysis':
-      return $audioAnalysisWrap;
-      break;
-    case 'bot-text':
-      return $botTextSection;
-      break;
-    case 'user-text':
-      return $userTextSection;
-      break;
-    default:
-      return null;
-      break;
-  }
-}
-
 function showSection(sectionName) {
   $(`#${sectionName}`).fadeIn();
 }
 
 function hideSection(sectionName) {
   $(`#${sectionName}`).fadeOut();
+}
+
+function showSections(sectionNames) {
+  sectionNames.map(sectionName => showSection(sectionName));
+}
+
+function hideSections(sectionNames) {
+  sectionNames.map(sectionName => hideSection(sectionName));
+}
+
+function resetSection(sectionName) {
+  switch (sectionName) {
+    case 'video-analysis':
+      setVideoAnalysis();
+      break;
+    case 'audio-analysis':
+      setAudioAnalysis();
+      break;
+    case 'bot-text':
+      setBotText();
+      break;
+    case 'user-text':
+      setUserText();
+      break;
+    default:
+      console.log('cannot reset unknown section', sectionName);
+      break;
+  }
+}
+
+function resetSections(sectionNames) {
+  sectionNames.map(sectionName => resetSection(sectionName));
 }
 
 function startProgress() {
@@ -120,24 +133,38 @@ function endProgress() {
   return;
 }
 
-// stave off screensaver
-function keepAlive() {
-  if (screensaver.isActivated()) {
-    wakeUp();
+function setConversationStageStart() {
+  hideSections(['video-analysis-wrap', 'audio-analysis-wrap']);
+  resetSections(['video-analysis', 'audio-analysis']);
+  setUserText();
+  setBotText('Say "Start Conversation" to begin.');
+}
+
+function setConversationStageFeelings() {
+  // hideSections(['video-analysis-wrap', 'audio-analysis-wrap']);
+  // resetSections('video-analysis', 'audio-analysis');
+  // setUserText();
+  // setBotText("");
+}
+
+function setConversationStage(stage) {
+  switch (stage) {
+    case 'start':
+      setConversationStageStart();
+      break;
+    case 'feelings':
+      setConversationStageFeelings();
+      break;
+    case 'joke':
+      break;
+    case 'ad':
+      break;
+    case 'end':
+      break;
+    default:
+      console.log('cannot set unknown conversation stage', stage);
+      break;
   }
-
-  clearTimeout(screensaverTimeout);
-  screensaverTimeout = setTimeout(goToSleep, screensaverTimeoutLength);
-}
-
-// start screensaver, reset everything
-function goToSleep() {
-  screensaver.start();
-  audio.stopListening();
-}
-
-function wakeUp() {
-  screensaver.stop();
 }
 
 exports.asyncInit = asyncInit;
@@ -151,5 +178,4 @@ exports.setBotText = setBotText;
 exports.setUserText = setUserText;
 exports.startProgress = startProgress;
 exports.endProgress = endProgress;
-exports.keepAlive = keepAlive;
-exports.wakeUp = wakeUp;
+exports.setConversationStage = setConversationStage;

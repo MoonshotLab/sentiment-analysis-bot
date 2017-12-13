@@ -38,6 +38,7 @@ body#index {
   }
 
   #camera-wrap {
+    // display: none;
     // background-color: yellow;
     grid-area: camera;
   }
@@ -73,6 +74,11 @@ body#index {
     // background-color: lightblue;
     grid-area: user-text;
     display: none;
+  }
+
+  #bot-text,
+  #user-text {
+    text-align: center;
   }
 
   #audio-analysis-wrap {

@@ -6,6 +6,7 @@ const video = $video[0];
 let activated = false;
 
 const videoPlayingClass = 'video-playing';
+let screensaverTimeout = null;
 
 function playVideo() {
   video.play();
@@ -38,6 +39,17 @@ function isActivated() {
   return activated;
 }
 
+function keepAwake(timeoutLength, awakeCb, sleepCb) {
+  if (isActivated()) {
+    stop();
+    awakeCb();
+  }
+
+  clearTimeout(screensaverTimeout);
+  screensaverTimeout = setTimeout(sleepCb, timeoutLength);
+}
+
 exports.start = start;
 exports.stop = stop;
 exports.isActivated = isActivated;
+exports.keepAwake = keepAwake;

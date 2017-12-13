@@ -1,6 +1,7 @@
 const Promise = require('bluebird');
 
 const ui = require('./_ui');
+const chat = require('./_chat');
 
 let recordingInterval = null; // reference to setInterval
 
@@ -12,13 +13,31 @@ let keepRecording = false;
 let recording = false;
 let silenceDuration = 0; // ms
 
-const volThreshold = 20; // softer than this will be considered silence
+const volThreshold = 15; // softer than this will be considered silence
 
 const detectAudioInterval = 500; // ms
-const waitAfterVolumeLength = 1 * 1000; // ms
+const waitAfterVolumeLength = 0.5 * 1000; // ms
 const ambientListeningWindowLength = 15 * 1000; // ms
 
 const showUserTextTimeout = 7.5 * 1000;
+
+function asyncGenerateAndSay(text) {
+  return new Promise((resolve, reject) => {
+    $.ajax({
+      type: 'POST',
+      url: '/generate',
+      data: {
+        text: text
+      }
+    })
+      .then(res => {
+        console.log(res);
+        playFromUrl(res.recordingPath);
+        resolve(res);
+      })
+      .catch(e => reject(e));
+  });
+}
 
 function playFromUrl(url) {
   const sound = new Audio(url);
@@ -111,30 +130,6 @@ function setupMediaSource(stream) {
   };
 }
 
-function handleAudioProcessingSuccess(res) {
-  ui.setAudioStatus('Audio processed successfully');
-  ui.setUserText(res.transcription);
-  ui.setAudioAnalysis(getEmotionAnalysisHtml(res.emotions));
-
-  ui.endProgress();
-  setTimeout(() => {
-    ui.setAudioStatus('Listening...');
-    ui.setUserText();
-    ui.setAudioAnalysis();
-  }, showUserTextTimeout);
-}
-
-function handleAudioProcessingError(error) {
-  console.log('post error', error``);
-  ui.endProgress();
-  ui.setUserText('Error processing audio');
-  setTimeout(() => {
-    ui.setAudioStatus('Listening...');
-    ui.setUserText();
-    ui.setAudioAnalysis();
-  }, showUserTextTimeout);
-}
-
 function processAudioBlob(blob) {
   const formData = new FormData();
   formData.append('data', blob);
@@ -149,10 +144,15 @@ function processAudioBlob(blob) {
     contentType: false
   })
     .then(res => {
-      handleAudioProcessingSuccess(res);
+      ui.endProgress();
+      ui.setAudioStatus('Audio processed successfully');
+      chat.handleAudioProcessingSuccess(res);
     })
     .catch(e => {
-      handleAudioProcessingError(e);
+      console.log('post error', e);
+      ui.endProgress();
+      ui.setUserText('Error processing audio.');
+      chat.handleAudioProcessingError(e);
     });
 }
 
@@ -299,3 +299,4 @@ exports.asyncSetupAudio = asyncSetupAudio;
 exports.startListening = startListening;
 exports.stopListening = stopListening;
 exports.playFromUrl = playFromUrl;
+exports.asyncGenerateAndSay = asyncGenerateAndSay;

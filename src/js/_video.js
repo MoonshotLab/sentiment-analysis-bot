@@ -3,20 +3,18 @@ const Promise = require('bluebird');
 const config = require('./_config');
 const ui = require('./_ui');
 const audio = require('./_audio');
+const chat = require('./_chat');
 
 let detector;
 let detectorRunning = false;
-let faceInFrame = false;
 let frames = 0;
-
-let facelessFrames = 0;
-const facelessFramesTolerance = 10;
 
 function hookUpDetectorEvents(detector) {
   detector.addEventListener('onInitializeSuccess', e => {
     ui.setVideoStatus('Watching');
-    ui.setVideoAnalysis('<h4>No face in frame</h4>');
-    ui.setBotText(`Say "Start Conversation" to begin.`);
+    // ui.setVideoAnalysis('<h4>No face in frame</h4>');
+    // ui.setBotText(`Say "Start Conversation" to begin.`);
+    chat.setConversationStage('start');
   });
 
   detector.addEventListener('onInitializeFailure', e => {
@@ -39,21 +37,20 @@ function hookUpDetectorEvents(detector) {
     timestamp
   ) {
     frames++;
-    // console.log(facelessFrames, facelessFramesTolerance);
     if (frames % 5 === 0) {
+      const faceInFrame = chat.getFaceStatus();
       if (faces.length > 0) {
-        ui.keepAlive();
+        chat.keepAwake();
         if (faceInFrame !== true) {
-          setFaceStatus(true);
-          ui.setVideoAnalysis('<h4>Face in frame</h4>');
+          chat.setFaceStatus(true);
+          // ui.setVideoAnalysis('<h4>Face in frame</h4>');
           audio.startListening();
         }
-        ui.setVideoAnalysis(getEmotionAnalysisHtml(faces));
+        // ui.setVideoAnalysis(getEmotionAnalysisHtml(faces));
       } else {
-        facelessFrames++;
         if (faceInFrame === true) {
-          setFaceStatus(false);
-          ui.setVideoAnalysis('<h4>No face in frame</h4>');
+          chat.setFaceStatus(false);
+          // ui.setVideoAnalysis('<h4>No face in frame</h4>');
           // audio.hideSection();
         }
       }
@@ -120,21 +117,6 @@ function configureDetector(detector) {
   detector.detectEmotions.fear = true;
   detector.detectEmotions.sadness = true;
   detector.detectEmotions.surprise = true;
-}
-
-function setFaceStatus(newFaceStatus) {
-  faceInFrame = newFaceStatus;
-
-  if (faceInFrame === true) {
-    ui.setVideoStatus('Face in frame');
-    facelessFrames = 0;
-    // $faceStatus.text('Face in frame');
-    // $emotionsWrap.show();
-  } else {
-    ui.setVideoStatus('No face in frame');
-    // $faceStatus.text('No face in frame');
-    // $emotionsWrap.hide();
-  }
 }
 
 function asyncSetupCamera($cameraRoot) {

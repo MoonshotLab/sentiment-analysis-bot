@@ -29,15 +29,19 @@ function asyncSaveRecording(inputText, data) {
     //   RequestCharacters: 37
     // };
 
-    const filePath = `./${path.join(
+    const publicPath = path.join(
       config.recordingsPath,
-      _.truncate(_.kebabCase(inputText), { length: 200 })
-    )}.${pollyOutputFormat}`;
+      `${_.truncate(_.kebabCase(inputText), { length: 200 })}.${
+        pollyOutputFormat
+      }`
+    );
+
+    const filePath = path.join('public', publicPath);
 
     fs
       .outputFile(filePath, data.AudioStream)
       .then(() => {
-        resolve(filePath);
+        resolve(publicPath);
       })
       .catch(e => {
         console.log('error saving recording', e);

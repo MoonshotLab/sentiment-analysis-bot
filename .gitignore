@@ -66,3 +66,4 @@ keyfile.json
 # Custom
 save/
 db.json
+public/recordings/
