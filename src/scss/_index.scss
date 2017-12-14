@@ -15,9 +15,11 @@ body#index {
     padding: 2.5%;
     display: grid;
 
-    grid-template-columns: 1fr 2fr 1fr;
-    grid-template-rows: 2fr 3fr 2fr;
-    grid-gap: 1%;
+    // grid-template-columns: 1fr 2fr 1fr;
+    grid-template-columns: 25% 50% 25%;
+    // grid-template-rows: 2fr 5fr 2fr;
+    grid-template-rows: 30% 50% 20%;
+    // grid-gap: 1%;
 
     grid-template-areas:
       'page-status camera user-text'

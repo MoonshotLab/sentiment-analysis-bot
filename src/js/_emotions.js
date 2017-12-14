@@ -3,8 +3,8 @@ const Promise = require('bluebird');
 const chat = require('./_chat');
 const ui = require('./_ui');
 
-let videoEmotions = {};
-let textEmotions = {};
+let videoEmotions = [];
+let audioEmotions = [];
 const emotionThreshold = 0;
 
 function getEmotionColorByName(emotionName) {
@@ -76,3 +76,4 @@ function getAudioEmotions() {
 exports.getVideoEmotionsArray = getVideoEmotionsArray;
 exports.processVideoFrame = processVideoFrame;
 exports.getVideoEmotions = getVideoEmotions;
+exports.getAudioEmotions = getAudioEmotions;

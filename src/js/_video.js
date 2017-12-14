@@ -5,6 +5,7 @@ const ui = require('./_ui');
 const audio = require('./_audio');
 const chat = require('./_chat');
 const emotions = require('./_emotions');
+const chart = require('./_chart');
 
 let detector;
 let detectorRunning = false;
@@ -16,6 +17,7 @@ function hookUpDetectorEvents(detector) {
     // ui.setVideoAnalysis('<h4>No face in frame</h4>');
     // ui.setBotText(`Say "Start Conversation" to begin.`);
     chat.setConversationStage('start');
+    chart.startVideoChart();
   });
 
   detector.addEventListener('onInitializeFailure', e => {

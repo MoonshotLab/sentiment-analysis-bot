@@ -1,3 +1,5 @@
+const emotions = require('./_emotions');
+
 let videoCanvas = null;
 let audioCanvas = null;
 
@@ -6,6 +8,9 @@ let audioP5 = null;
 
 const chartWidth = 500;
 const chartHeight = 225;
+
+let drawVideoChart = false;
+let drawAudioChart = false;
 
 // figure these out?
 const emotionColorsMap = {
@@ -17,59 +22,94 @@ const emotionColorsMap = {
   surprise: 'mediumpurple'
 };
 
-function chartFactory(sketch) {
-  const margin = 10;
-  const halfMargin = parseInt(margin / 2);
-  const barHeight = parseInt(
-    chartHeight / Object.keys(emotionColorsMap).length - margin
-  );
+function chartFactoryFactory(getData, drawChartFunction) {
+  // lol
+  return sketch => {
+    let chartData = null;
+    let chartDataStr = null;
 
-  sketch.setup = () => {
-    sketch.createCanvas(chartWidth, chartHeight);
-    sketch.background(255);
-    sketch.noLoop();
-    sketch.textSize(16);
-    sketch.strokeWeight(2);
-  };
+    const margin = 10;
+    const halfMargin = parseInt(margin / 2);
+    const barHeight = parseInt(
+      chartHeight / Object.keys(emotionColorsMap).length - margin
+    );
 
-  sketch.update = data => {
-    sketch.background(255);
-    const [emotions, emotionVals] = [Object.keys(data), Object.values(data)];
+    sketch.setup = () => {
+      sketch.createCanvas(chartWidth, chartHeight);
+      sketch.background(255);
+      sketch.textSize(16);
+      sketch.strokeWeight(2);
+    };
 
-    data.map((emotion, i) => {
-      sketch.fill(emotion.color);
-      const barX = halfMargin;
-      const barY = halfMargin * (i + 1) + i * barHeight;
-      const barWidth = emotion.val * (chartWidth - margin);
+    sketch.draw = () => {
+      if (drawChartFunction() === true) {
+        const newData = getData();
+        if (JSON.stringify(newData) !== chartDataStr) {
+          sketch.background(255);
+          // data is different, update
+          newData.map((emotion, i) => {
+            sketch.fill(emotion.color);
+            const barX = halfMargin;
+            const barY = halfMargin * (i + 1) + i * barHeight;
+            const barWidth = emotion.val * (chartWidth - margin);
 
-      sketch.rect(barX, barY, barWidth, barHeight);
-      sketch.fill(255);
-      sketch.stroke(0);
-      sketch.text(emotion.name, barX, barY, barWidth, barHeight);
-      // sketch.rect(
-      //   halfMargin,
-      //   halfMargin * (i + 1) + barHeight * i,
-      //   chartWidth - halfMargin,
-      //   barHeight
-      // );
-    });
+            sketch.rect(barX, barY, barWidth, barHeight);
+            sketch.fill(255);
+            sketch.stroke(0);
+            sketch.text(emotion.name, barX, barY, barWidth, barHeight);
+          });
+
+          chartData = newData;
+          chartDataStr = JSON.stringify(chartData);
+        }
+      } else {
+        sketch.background(255);
+      }
+    };
   };
 }
 
 function setupCharts(videoChartWrapId, audioChartWrapId) {
-  videoP5 = new p5(chartFactory, videoChartWrapId);
-  audioP5 = new p5(chartFactory, audioChartWrapId);
+  const videoChartFactory = chartFactoryFactory(
+    emotions.getVideoEmotions,
+    getDrawVideoChartStatus
+  );
+  videoP5 = new p5(videoChartFactory, videoChartWrapId);
+
+  const audioChartFactory = chartFactoryFactory(
+    emotions.getAudioEmotions,
+    getDrawAudioChartStatus
+  );
+  audioP5 = new p5(audioChartFactory, audioChartWrapId);
+}
+
+function getDrawVideoChartStatus() {
+  return drawVideoChart === true;
+}
+
+function getDrawAudioChartStatus() {
+  return drawAudioChart === true;
 }
 
 function updateVideoData(data) {
   // console.log(data);
-  videoP5.update(data);
+  // videoP5.update(data);
 }
 
 function updateAudioData(data) {
   // audioP5.update(data);
 }
 
+function startVideoChart() {
+  drawVideoChart = true;
+}
+
+function startAudioChart() {
+  drawAudioChart = true;
+}
+
 exports.setupCharts = setupCharts;
 exports.updateVideoData = updateVideoData;
 exports.updateAudioData = updateAudioData;
+exports.startVideoChart = startVideoChart;
+exports.startAudioChart = startAudioChart;
