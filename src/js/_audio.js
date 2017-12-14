@@ -13,7 +13,7 @@ let keepRecording = false;
 let recording = false;
 let silenceDuration = 0; // ms
 
-const volThreshold = 15; // softer than this will be considered silence
+const volThreshold = 25; // softer than this will be considered silence
 
 const detectAudioInterval = 500; // ms
 const waitAfterVolumeLength = 0.5 * 1000; // ms

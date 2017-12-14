@@ -9,6 +9,7 @@ const screensaver = require('./_screensaver');
 const screensaverTimeoutLength = 30 * 1000; // ms
 
 let faceInFrame = false;
+let processEmotions = true;
 
 let conversationPhase = 'start';
 const conversation = {
@@ -164,7 +165,11 @@ function setFaceStatus(newFaceStatus) {
 }
 
 function getFaceStatus() {
-  return faceInFrame;
+  return faceInFrame === true;
+}
+
+function getProcessEmotionsStatus() {
+  return processEmotions === true;
 }
 
 exports.asyncInit = asyncInit;
@@ -176,3 +181,4 @@ exports.setConversationStage = setConversationStage;
 exports.keepAwake = keepAwake;
 exports.setFaceStatus = setFaceStatus;
 exports.getFaceStatus = getFaceStatus;
+exports.getProcessEmotionsStatus = getProcessEmotionsStatus;

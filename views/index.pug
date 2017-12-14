@@ -8,7 +8,8 @@ block content
         p#audio-status Audio Status
     section#video-analysis-wrap
       h4 Video Analysis
-      div#video-analysis
+      //- div#video-analysis
+      div#video-emotions-chart-wrap
     section#camera-wrap
       //- h4 Camera
       div#camera-root
@@ -18,11 +19,15 @@ block content
       h4#user-text
     section#audio-analysis-wrap
       h4 Audio Analysis
-      div#audio-analysis
+      div#audio-emotions-chart-wrap
+      //- div#audio-analysis
+      div#audio-emotions-chart
   div#video-wrap
     video(src='/video/screensaver.mp4', loop)
 
 block footer_scripts
-  script(src='js/lib/jquery.min.js')
+  script(src='/js/lib/jquery.min.js')
   script(src='https://download.affectiva.com/js/3.2/affdex.js')
-  script(src='js/main.bundle.js')
+  script(src='/js/lib/p5.min.js')
+  script(src='/js/lib/p5.dom.min.js')
+  script(src='/js/main.bundle.js')

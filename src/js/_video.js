@@ -4,6 +4,7 @@ const config = require('./_config');
 const ui = require('./_ui');
 const audio = require('./_audio');
 const chat = require('./_chat');
+const emotions = require('./_emotions');
 
 let detector;
 let detectorRunning = false;
@@ -46,7 +47,7 @@ function hookUpDetectorEvents(detector) {
           // ui.setVideoAnalysis('<h4>Face in frame</h4>');
           audio.startListening();
         }
-        // ui.setVideoAnalysis(getEmotionAnalysisHtml(faces));
+        emotions.processVideoFrame(faces);
       } else {
         if (faceInFrame === true) {
           chat.setFaceStatus(false);
