@@ -2,28 +2,17 @@ const Promise = require('bluebird');
 
 const chat = require('./_chat');
 const ui = require('./_ui');
+const config = require('./_config');
 
 let videoEmotions = [];
 let audioEmotions = [];
 const emotionThreshold = 0;
 
+const emotionsMap = config.emotions.emotionsMap;
+
 function getEmotionColorByName(emotionName) {
-  switch (emotionName) {
-    case 'neutral':
-      return 'darkgray';
-    case 'anger':
-      return 'red';
-    case 'joy':
-      return 'yellow';
-    case 'sadness':
-      return 'blue';
-    case 'fear':
-      return 'black';
-    case 'surprise':
-      return 'mediumpurple';
-    default:
-      throw new Error('unknown emotion', emotionName);
-  }
+  if (emotionName in emotionsMap) return emotionsMap[emotionName].color;
+  throw new Error('unknown emotion', emotionName);
 }
 
 function getVideoEmotionsArray(facesInfo) {

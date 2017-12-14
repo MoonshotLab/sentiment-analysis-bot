@@ -1,4 +1,8 @@
 const emotions = require('./_emotions');
+const config = require('./_config');
+
+const chartWidth = config.chart.width;
+const chartHeight = config.chart.height;
 
 let videoCanvas = null;
 let audioCanvas = null;
@@ -6,21 +10,11 @@ let audioCanvas = null;
 let videoP5 = null;
 let audioP5 = null;
 
-const chartWidth = 500;
-const chartHeight = 225;
-
 let drawVideoChart = false;
 let drawAudioChart = false;
 
 // figure these out?
-const emotionColorsMap = {
-  neutral: 'darkgray',
-  anger: 'red',
-  joy: 'yellow',
-  sadness: 'blue',
-  fear: 'black',
-  surprise: 'mediumpurple'
-};
+const emotionsMap = config.emotions.emotionsMap;
 
 function chartFactoryFactory(getData, drawChartFunction) {
   // lol
@@ -31,7 +25,7 @@ function chartFactoryFactory(getData, drawChartFunction) {
     const margin = 10;
     const halfMargin = parseInt(margin / 2);
     const barHeight = parseInt(
-      chartHeight / Object.keys(emotionColorsMap).length - margin
+      chartHeight / Object.keys(emotionsMap).length - margin
     );
 
     sketch.setup = () => {

@@ -5,33 +5,15 @@ const audio = require('./_audio');
 const ui = require('./_ui');
 const utils = require('./_utils');
 const screensaver = require('./_screensaver');
+const config = require('./_config');
 
-const screensaverTimeoutLength = 30 * 1000; // ms
+const screensaverTimeoutLength = config.chat.defaultScreensaverTimeoutLength; // ms
 
 let faceInFrame = false;
 let processEmotions = true;
 
 let conversationPhase = 'start';
-const conversation = {
-  start: {
-    next: 'feelings'
-  },
-  feelings: {
-    next: 'joke'
-  },
-  // jokeAsk: {
-  //   next: 'joke'
-  // },
-  joke: {
-    next: 'ad'
-  },
-  ad: {
-    next: 'end'
-  },
-  end: {
-    next: 'start'
-  }
-};
+const conversation = config.chat.conversationMap;
 
 function asyncInit() {
   return new Promise((resolve, reject) => {

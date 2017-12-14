@@ -2,6 +2,7 @@ const Promise = require('bluebird');
 
 const ui = require('./_ui');
 const chat = require('./_chat');
+const config = require('./_config');
 
 let recordingInterval = null; // reference to setInterval
 
@@ -13,13 +14,11 @@ let keepRecording = false;
 let recording = false;
 let silenceDuration = 0; // ms
 
-const volThreshold = 25; // softer than this will be considered silence
+const volThreshold = config.audio.volThreshold; // softer than this will be considered silence
 
-const detectAudioInterval = 500; // ms
-const waitAfterVolumeLength = 0.5 * 1000; // ms
-const ambientListeningWindowLength = 15 * 1000; // ms
-
-const showUserTextTimeout = 7.5 * 1000;
+const detectAudioInterval = config.audio.detectAudioInterval; // ms
+const waitAfterVolumeLength = config.audio.waitAfterVolumeLength; // ms
+const ambientListeningWindowLength = config.audio.ambientListeningWindowLength; // ms
 
 function asyncGenerateAndSay(text) {
   return new Promise((resolve, reject) => {

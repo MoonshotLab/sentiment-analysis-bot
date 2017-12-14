@@ -1,11 +1,13 @@
+const config = require('./_config');
+
 const $body = $('body');
-const $videoWrapper = $('#video-wrap');
+const $videoWrapper = $(`#${config.screensaver.videoWrapperId}`);
 const $video = $videoWrapper.find('video');
 const video = $video[0];
 
 let activated = false;
 
-const videoPlayingClass = 'video-playing';
+const videoPlayingClass = config.screensaver.videoPlayingClass;
 let screensaverTimeout = null;
 
 function playVideo() {
