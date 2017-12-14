@@ -7,36 +7,72 @@ let videoEmotions = {};
 let textEmotions = {};
 const emotionThreshold = 0;
 
-function formatVideoEmotions(facesInfo) {
+function getEmotionColorByName(emotionName) {
+  switch (emotionName) {
+    case 'neutral':
+      return 'darkgray';
+    case 'anger':
+      return 'red';
+    case 'joy':
+      return 'yellow';
+    case 'sadness':
+      return 'blue';
+    case 'fear':
+      return 'black';
+    case 'surprise':
+      return 'mediumpurple';
+    default:
+      throw new Error('unknown emotion', emotionName);
+  }
+}
+
+function getVideoEmotionsArray(facesInfo) {
   if (facesInfo.length == 0) return null;
 
   // for now, only consider first face
   const emotions = facesInfo[0].emotions;
-  const formattedEmotions = {};
+  const emotionsArray = [];
 
-  for (let emotion in emotions) {
-    const emotionVal = parseInt(emotions[emotion]) / 100;
-    if (emotionVal > emotionThreshold) formattedEmotions[emotion] = emotionVal;
+  for (let emotionName in emotions) {
+    const emotionVal = parseInt(emotions[emotionName]) / 100;
+    if (emotionVal > emotionThreshold) {
+      emotionsArray.push({
+        name: emotionName,
+        val: emotionVal,
+        color: getEmotionColorByName(emotionName)
+      });
+    }
   }
 
-  // return formattedEmotions;
-
-  if (Object.keys(formattedEmotions).length === 0) {
-    return {
-      neutral: 0.5
-    };
+  if (emotionsArray.length === 0) {
+    return [
+      {
+        name: 'neutral',
+        val: 0.5,
+        color: getEmotionColorByName('neutral')
+      }
+    ];
   } else {
-    return formattedEmotions;
+    return emotionsArray;
   }
 }
 
 function processVideoFrame(facesInfo) {
   if (chat.getProcessEmotionsStatus() === true) {
-    const emotions = formatVideoEmotions(facesInfo);
-    ui.processVideoEmotions(emotions);
+    videoEmotions = getVideoEmotionsArray(facesInfo);
+    ui.processVideoEmotions(videoEmotions);
   }
 }
 
+function getVideoEmotions() {
+  return videoEmotions;
+}
+
+function getAudioEmotions() {
+  return audioEmotions;
+}
+
 // exports.getVideoEmotionAnalysisHtml = getVideoEmotionAnalysisHtml;
-exports.formatVideoEmotions = formatVideoEmotions;
+exports.getVideoEmotionsArray = getVideoEmotionsArray;
 exports.processVideoFrame = processVideoFrame;
+exports.getVideoEmotions = getVideoEmotions;

@@ -36,28 +36,23 @@ function chartFactory(sketch) {
     sketch.background(255);
     const [emotions, emotionVals] = [Object.keys(data), Object.values(data)];
 
-    for (let i = 0; i < emotions.length; i++) {
-      const emotion = emotions[i];
-      const val = emotionVals[i];
-      // console.log(emotion, val);
-      const color = emotionColorsMap[emotion];
-      // console.log(color);
-      sketch.fill(color);
+    data.map((emotion, i) => {
+      sketch.fill(emotion.color);
       const barX = halfMargin;
       const barY = halfMargin * (i + 1) + i * barHeight;
-      const barWidth = val * (chartWidth - margin);
+      const barWidth = emotion.val * (chartWidth - margin);
 
       sketch.rect(barX, barY, barWidth, barHeight);
       sketch.fill(255);
       sketch.stroke(0);
-      sketch.text(emotion, barX, barY, barWidth, barHeight);
+      sketch.text(emotion.name, barX, barY, barWidth, barHeight);
       // sketch.rect(
       //   halfMargin,
       //   halfMargin * (i + 1) + barHeight * i,
       //   chartWidth - halfMargin,
       //   barHeight
       // );
-    }
+    });
   };
 }
 
