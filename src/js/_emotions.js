@@ -5,6 +5,7 @@ const ui = require('./_ui');
 
 let videoEmotions = {};
 let textEmotions = {};
+const emotionThreshold = 0;
 
 function formatVideoEmotions(facesInfo) {
   if (facesInfo.length == 0) return null;
@@ -15,16 +16,18 @@ function formatVideoEmotions(facesInfo) {
 
   for (let emotion in emotions) {
     const emotionVal = parseInt(emotions[emotion]) / 100;
-    if (emotionVal > 0.1) formattedEmotions[emotion] = emotionVal;
+    if (emotionVal > emotionThreshold) formattedEmotions[emotion] = emotionVal;
   }
 
-  if (Object.keys(formattedEmotions).length === 0) {
-    return {
-      neutral: 1
-    };
-  } else {
-    return formattedEmotions;
-  }
+  return formattedEmotions;
+  //
+  // if (Object.keys(formattedEmotions).length === 0) {
+  //   return {
+  //     neutral: 1
+  //   };
+  // } else {
+  //   return formattedEmotions;
+  // }
 }
 
 function processVideoFrame(facesInfo) {
