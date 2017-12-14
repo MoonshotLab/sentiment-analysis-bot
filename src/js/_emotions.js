@@ -19,15 +19,15 @@ function formatVideoEmotions(facesInfo) {
     if (emotionVal > emotionThreshold) formattedEmotions[emotion] = emotionVal;
   }
 
-  return formattedEmotions;
-  //
-  // if (Object.keys(formattedEmotions).length === 0) {
-  //   return {
-  //     neutral: 1
-  //   };
-  // } else {
-  //   return formattedEmotions;
-  // }
+  // return formattedEmotions;
+
+  if (Object.keys(formattedEmotions).length === 0) {
+    return {
+      neutral: 0.5
+    };
+  } else {
+    return formattedEmotions;
+  }
 }
 
 function processVideoFrame(facesInfo) {

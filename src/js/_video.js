@@ -38,7 +38,7 @@ function hookUpDetectorEvents(detector) {
     timestamp
   ) {
     frames++;
-    if (frames % 5 === 0) {
+    if (frames % 2 === 0) {
       const faceInFrame = chat.getFaceStatus();
       if (faces.length > 0) {
         chat.keepAwake();
@@ -157,37 +157,6 @@ function stopWatching() {
     detectorRunning = false;
     detector.stop();
   }
-}
-
-function getEmotionsObj(facesInfo) {
-  if (facesInfo.length == 0) return null;
-
-  // for now, only consider first face
-  const emotions = facesInfo[0].emotions;
-  const formattedEmotions = {};
-
-  for (let emotion in emotions) {
-    const emotionVal = parseInt(emotions[emotion]) / 100;
-    if (emotionVal > 0.1) formattedEmotions[emotion] = emotionVal;
-  }
-
-  if (Object.keys(formattedEmotions).length === 0) {
-    return {
-      neutral: 1
-    };
-  } else {
-    return formattedEmotions;
-  }
-}
-
-function getEmotionAnalysisHtml(facesInfo) {
-  const emotions = getEmotionsObj(facesInfo);
-  let html = '<ul>';
-  for (let emotion in emotions) {
-    html += `<li>${emotion}: ${parseInt(emotions[emotion] * 100)}%`;
-  }
-  html += '</ul>';
-  return html;
 }
 
 exports.asyncSetupCamera = asyncSetupCamera;
