@@ -76,7 +76,11 @@ function handleAudioProcessingSuccess(res) {
     case 'feelings':
       setConversationStageFeelingsAnalysis(userText, res.textSentimentScore);
       break;
+    case 'joke-ask':
+      setConverastionStageJoke(res.textSentimentScore);
+      break;
     case 'joke':
+      setConversationStageJokeAnalysis(userText, res.textSentimentScore);
       break;
     case 'ad':
       break;
@@ -169,22 +173,104 @@ function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
 
   const comparisonFeelingText = text.getComparisonFeelingText(
     avgVideoEmotions,
-    formattedTextSentiment
+    formattedTextSentiment[0]
   );
   console.log(comparisonFeelingText);
-  asyncBotSay(comparisonFeelingText);
+  asyncBotSay(comparisonFeelingText)
+    .then(() => {
+      return Promise.delay(2 * 1000);
+    })
+    .then(() => {
+      setConversationStageJokeAsk();
+    });
+}
+
+function setConversationStageJokeAsk() {
+  conversationPhase = 'joke-ask';
+  ui.setConversationStage('joke-ask');
+  chart.resetCharts(true);
+  asyncBotSay(
+    `Alright, next I'm going to tell you a joke. How does that sound?`
+  );
+}
+
+function setConverastionStageJoke(textSentimentScore = 0.5) {
+  conversationPhase = 'joke';
+  ui.setConversationStage('joke');
+
+  let response = '';
+  if (textSentimentScore < 0.4) {
+    response = `Well, too bad. There's no stopping me now.`;
+  } else {
+    response = `Alright, let's do it.`;
+  }
+
+  asyncBotSay(response)
+    .then(() => {
+      return Promise.delay(1.5 * 1000);
+    })
+    .then(() => {
+      recording = true;
+      updateVideoChart = false;
+      emotions.resetVideoEmotionsHistory();
+
+      const joke = text.getRandomJoke();
+      return asyncBotSay(joke);
+    })
+    .then(() => {
+      return Promise.delay(1.5 * 1000);
+    })
+    .then(() => {
+      return asyncBotSay(`What did you think of my joke?`);
+    });
+}
+
+function setConversationStageJokeAnalysis(response, textSentimentScore) {
+  recording = false;
+  updateVideoChart = false;
+  const avgVideoEmotions = emotions.getAverageEmotionsFromVideoHistory();
+  const formattedTextSentiment = emotions.getFormattedTextSentiment(
+    textSentimentScore
+  );
+
+  chart.updateVideoData(avgVideoEmotions);
+  chart.updateTextSentimentData(formattedTextSentiment);
+
+  const comparisonJokeText = text.getComparisonJokeText(
+    avgVideoEmotions,
+    formattedTextSentiment[0]
+  );
+  asyncBotSay(comparisonJokeText)
+    .then(() => {
+      return Promise.delay(2 * 1000);
+    })
+    .then(() => {
+      return asyncBotSay(
+        `That’s all I have for you today. Come back another time, and I’ll tell you another joke.`
+      );
+    })
+    .then(() => {
+      // RESET EVERYTHING!
+    });
 }
 
 function asyncBotSay(text) {
-  return audio
-    .asyncGenerateAndSay(text)
-    .then(res => {
-      ui.setBotText(text);
-      console.log('bot say success', res);
-    })
-    .catch(e => {
-      console.log('error saying', text, e);
-    });
+  return new Promise((resolve, reject) => {
+    audio
+      .asyncGenerateAudio(text)
+      .then(res => {
+        ui.setBotText(text);
+        return audio.asyncPlayFromUrl(res.recordingPath);
+      })
+      .then(res => {
+        console.log('bot say success');
+        resolve();
+      })
+      .catch(e => {
+        console.log('error saying', text, e);
+        reject(e);
+      });
+  });
 }
 
 function keepAwake() {

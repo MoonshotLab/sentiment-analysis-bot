@@ -20,19 +20,27 @@ const detectAudioInterval = config.audio.detectAudioInterval; // ms
 const waitAfterVolumeLength = config.audio.waitAfterVolumeLength; // ms
 const ambientListeningWindowLength = config.audio.ambientListeningWindowLength; // ms
 
+function asyncGenerateAudio(text) {
+  return $.ajax({
+    type: 'POST',
+    url: '/generate',
+    data: {
+      text: text
+    }
+  });
+}
+
 function asyncGenerateAndSay(text) {
   return new Promise((resolve, reject) => {
-    $.ajax({
-      type: 'POST',
-      url: '/generate',
-      data: {
-        text: text
-      }
-    })
+    asyncGenerateAudio(text)
       .then(res => {
-        console.log(res);
-        playFromUrl(res.recordingPath);
-        resolve(res);
+        asyncPlayFromUrl(res.recordingPath)
+          .then(() => {
+            resolve(res);
+          })
+          .catch(e => {
+            reject(e);
+          });
       })
       .catch(e => reject(e));
   });
@@ -41,6 +49,20 @@ function asyncGenerateAndSay(text) {
 function playFromUrl(url) {
   const sound = new Audio(url);
   sound.play();
+  sound.addEventListener('ended', () => {
+    console.log('audio track ended');
+  });
+}
+
+function asyncPlayFromUrl(url) {
+  return new Promise((resolve, reject) => {
+    const sound = new Audio(url);
+    sound.play();
+
+    sound.addEventListener('ended', () => {
+      resolve();
+    });
+  });
 }
 
 function createAudioMeter(audioContext, clipLevel, averaging, clipLag) {
@@ -295,7 +317,9 @@ function asyncSetupAudio() {
 }
 
 exports.asyncSetupAudio = asyncSetupAudio;
+exports.asyncGenerateAudio = asyncGenerateAudio;
 exports.startListening = startListening;
 exports.stopListening = stopListening;
 exports.playFromUrl = playFromUrl;
+exports.asyncPlayFromUrl = asyncPlayFromUrl;
 exports.asyncGenerateAndSay = asyncGenerateAndSay;

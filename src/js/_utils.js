@@ -6,8 +6,15 @@ function strHas(str, substr) {
 }
 
 function mapRange(val, fromLow, fromHigh, toLow, toHigh) {
-  return toLow + (toHigh - toLow) * (val - fromLow) / (fromHigh - fromLow);
+  const res = toLow + (toHigh - toLow) * (val - fromLow) / (fromHigh - fromLow);
+  console.log(res);
+  return res;
+}
+
+function randomPick(array) {
+  return array[Math.floor(Math.random() * array.length)];
 }
 
 exports.strHas = strHas;
 exports.mapRange = mapRange;
+exports.randomPick = randomPick;

@@ -107,6 +107,10 @@ function hideSections(sectionNames) {
   sectionNames.map(sectionName => hideSection(sectionName));
 }
 
+function hideAnalysisSections() {
+  hideSections(['video-analysis-wrap', 'text-analysis-wrap']);
+}
+
 function resetSection(sectionName) {
   switch (sectionName) {
     case 'video-analysis':
@@ -156,6 +160,9 @@ function setConversationStageFeelings() {
   // setBotText("");
 }
 
+function setConversationStageJokeAsk() {}
+function setConversationStageJoke() {}
+
 function setConversationStage(stage) {
   switch (stage) {
     case 'start':
@@ -164,7 +171,11 @@ function setConversationStage(stage) {
     case 'feelings':
       setConversationStageFeelings();
       break;
+    case 'joke-ask':
+      setConversationStageJokeAsk();
     case 'joke':
+      setConversationStageJoke();
+      break;
       break;
     case 'ad':
       break;
@@ -204,3 +215,4 @@ exports.startProgress = startProgress;
 exports.endProgress = endProgress;
 exports.setConversationStage = setConversationStage;
 exports.getVideoEmotionAnalysisHtml = getVideoEmotionAnalysisHtml;
+exports.hideAnalysisSections = hideAnalysisSections;

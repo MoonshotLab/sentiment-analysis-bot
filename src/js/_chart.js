@@ -75,6 +75,16 @@ function updateTextSentimentData(data = []) {
   textSentimentP5.update(data);
 }
 
+function resetCharts(hideSection = true) {
+  if (hideSection === true) {
+    ui.hideAnalysisSections();
+  }
+
+  updateVideoData();
+  updateTextSentimentData();
+}
+
 exports.setupCharts = setupCharts;
 exports.updateVideoData = updateVideoData;
 exports.updateTextSentimentData = updateTextSentimentData;
+exports.resetCharts = resetCharts;
