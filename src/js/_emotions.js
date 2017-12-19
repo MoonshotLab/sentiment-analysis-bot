@@ -23,9 +23,10 @@ function getFormattedTextSentiment(sentimentScore) {
 
   const formattedScore = [];
   let sentimentRating = null;
-  if (sentimentScore < 40) {
+
+  if (sentimentScore < 0.4) {
     sentimentRating = 'negative';
-  } else if (sentimentScore < 60) {
+  } else if (sentimentScore < 0.6) {
     sentimentRating = 'neutral';
   } else {
     sentimentRating = 'positive';
@@ -176,6 +177,17 @@ function resetVideoEmotionsHistory() {
   videoEmotionsHistory = [];
 }
 
+function getDominantSentimentFromNormalizedVals(normalizedVal) {
+  const threshold = 0.25;
+  if (normalizedVal < -1 * threshold) {
+    return 'negative';
+  } else if (normalizedVal < threshold) {
+    return 'neutral';
+  } else {
+    return 'positive';
+  }
+}
+
 // exports.getVideoEmotionAnalysisHtml = getVideoEmotionAnalysisHtml;
 exports.getVideoEmotionsArray = getVideoEmotionsArray;
 exports.getFormattedTextSentiment = getFormattedTextSentiment;
@@ -184,3 +196,4 @@ exports.clearVideoEmotions = clearVideoEmotions;
 exports.getAverageEmotionsFromVideoHistory = getAverageEmotionsFromVideoHistory;
 exports.rememberVideoEmotions = rememberVideoEmotions;
 exports.resetVideoEmotionsHistory = resetVideoEmotionsHistory;
+exports.getDominantSentimentFromNormalizedVals = getDominantSentimentFromNormalizedVals;

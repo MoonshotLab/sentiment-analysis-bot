@@ -4,6 +4,7 @@ const _ = require('lodash');
 const audio = require('./_audio');
 const ui = require('./_ui');
 const utils = require('./_utils');
+const text = require('./_text');
 const screensaver = require('./_screensaver');
 const config = require('./_config');
 const emotions = require('./_emotions');
@@ -131,11 +132,6 @@ function setConversationStageStart() {
   ui.setConversationStage('start');
   recording = false;
   updateVideoChart = true;
-  // emotions.startMonitoringVideo();
-  // setTimeout(() => {
-  //   emotions.stopMonitoringVideo();
-  // }, 5 * 1000);
-  // asyncBotSay('Say "Start" to begin conversation.');
 }
 
 function setConversationStageName() {
@@ -144,37 +140,39 @@ function setConversationStageName() {
   asyncBotSay(`Hello, I'm Emobot. What's your name?`);
   recording = false;
   updateVideoChart = true;
-  // hideSections(['video-analysis-wrap', 'text-analysis-wrap']);
-  // resetSections('video-analysis', 'audio-analysis');
-  // setBotText('Start Conversation');
 }
 
-function setConversationStageFeelings(name) {
+function setConversationStageFeelings(nameText) {
   conversationPhase = 'feelings';
   ui.setConversationStage('feelings');
+
+  // make sure name text doesn't contain `my name is` or `my name's`
+  const name = text.formatNameStr(nameText);
+
   asyncBotSay(`Hi ${_.capitalize(name)}. How are you feeling today?`);
   recording = true;
   updateVideoChart = false;
   emotions.resetVideoEmotionsHistory();
-
-  // asyncBotSay("I'm in my feelings");
-  // hideSections(['video-analysis-wrap', 'text-analysis-wrap']);
-  // resetSections('video-analysis', 'audio-analysis');
-  // setBotText('Start Conversation');
 }
 
 function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
   console.log(response, textSentimentScore);
   recording = false;
   updateVideoChart = false;
-  const avgEmotions = emotions.getAverageEmotionsFromVideoHistory();
-  // console.log(avgEmotions);
-  // const formattedAudioSentiment
+  const avgVideoEmotions = emotions.getAverageEmotionsFromVideoHistory();
   const formattedTextSentiment = emotions.getFormattedTextSentiment(
     textSentimentScore
   );
-  chart.updateVideoData(avgEmotions);
+
+  chart.updateVideoData(avgVideoEmotions);
   chart.updateTextSentimentData(formattedTextSentiment);
+
+  const comparisonFeelingText = text.getComparisonFeelingText(
+    avgVideoEmotions,
+    formattedTextSentiment
+  );
+  console.log(comparisonFeelingText);
+  asyncBotSay(comparisonFeelingText);
 }
 
 function asyncBotSay(text) {
