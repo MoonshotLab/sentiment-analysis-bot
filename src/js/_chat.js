@@ -160,6 +160,7 @@ function setConversationStageFeelings(nameText) {
 }
 
 function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
+  audio.stopListening();
   console.log(response, textSentimentScore);
   recording = false;
   updateVideoChart = false;
@@ -186,6 +187,7 @@ function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
 }
 
 function setConversationStageJokeAsk() {
+  audio.startListening();
   conversationPhase = 'joke-ask';
   ui.setConversationStage('joke-ask');
   chart.resetCharts(true);
@@ -195,6 +197,7 @@ function setConversationStageJokeAsk() {
 }
 
 function setConverastionStageJoke(textSentimentScore = 0.5) {
+  audio.stopListening();
   conversationPhase = 'joke';
   ui.setConversationStage('joke');
 
@@ -221,6 +224,7 @@ function setConverastionStageJoke(textSentimentScore = 0.5) {
       return Promise.delay(1.5 * 1000);
     })
     .then(() => {
+      audio.startListening();
       return asyncBotSay(`What did you think of my joke?`);
     });
 }
@@ -251,6 +255,7 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
     })
     .then(() => {
       // RESET EVERYTHING!
+      location.reload(); // FIXME
     });
 }
 
