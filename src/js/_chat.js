@@ -73,7 +73,7 @@ function handleAudioProcessingSuccess(res) {
       setConversationStageFeelings(userText);
       break;
     case 'feelings':
-      setConversationStageFeelingsAnalysis(userText, res.emotions);
+      setConversationStageFeelingsAnalysis(userText, res.textSentimentScore);
       break;
     case 'joke':
       break;
@@ -144,7 +144,7 @@ function setConversationStageName() {
   asyncBotSay(`Hello, I'm Emobot. What's your name?`);
   recording = false;
   updateVideoChart = true;
-  // hideSections(['video-analysis-wrap', 'audio-analysis-wrap']);
+  // hideSections(['video-analysis-wrap', 'text-analysis-wrap']);
   // resetSections('video-analysis', 'audio-analysis');
   // setBotText('Start Conversation');
 }
@@ -158,20 +158,23 @@ function setConversationStageFeelings(name) {
   emotions.resetVideoEmotionsHistory();
 
   // asyncBotSay("I'm in my feelings");
-  // hideSections(['video-analysis-wrap', 'audio-analysis-wrap']);
+  // hideSections(['video-analysis-wrap', 'text-analysis-wrap']);
   // resetSections('video-analysis', 'audio-analysis');
   // setBotText('Start Conversation');
 }
 
-function setConversationStageFeelingsAnalysis(response, audioEmotions) {
-  console.log(response, audioEmotions);
+function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
+  console.log(response, textSentimentScore);
   recording = false;
   updateVideoChart = false;
   const avgEmotions = emotions.getAverageEmotionsFromVideoHistory();
-  console.log(avgEmotions);
-  const formattedAudioEmotions = emotions.getAudioEmotionsArray(audioEmotions);
+  // console.log(avgEmotions);
+  // const formattedAudioSentiment
+  const formattedTextSentiment = emotions.getFormattedTextSentiment(
+    textSentimentScore
+  );
   chart.updateVideoData(avgEmotions);
-  chart.updateAudioData(formattedAudioEmotions);
+  chart.updateTextSentimentData(formattedTextSentiment);
 }
 
 function asyncBotSay(text) {

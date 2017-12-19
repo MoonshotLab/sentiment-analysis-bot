@@ -28,6 +28,12 @@ module.exports = {
       },
       surprise: {
         color: 'mediumpurple'
+      },
+      positive: {
+        color: 'green'
+      },
+      negative: {
+        color: 'red'
       }
     }
   },

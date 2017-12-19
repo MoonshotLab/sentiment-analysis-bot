@@ -6,7 +6,7 @@ const config = require('./_config');
 const chart = require('./_chart');
 
 let videoEmotions = [];
-let audioEmotions = [];
+// let audioEmotions = [];
 const emotionThreshold = 0;
 
 let videoEmotionsHistory = [];
@@ -18,32 +18,54 @@ function getEmotionColorByName(emotionName) {
   throw new Error('unknown emotion', emotionName);
 }
 
-function getAudioEmotionsArray(emotionsObj) {
-  const emotionsArray = [];
+function getFormattedTextSentiment(sentimentScore) {
+  sentimentScore = parseInt(sentimentScore * 100) / 100;
 
-  for (let emotionName in emotionsObj) {
-    const emotionVal = parseInt(emotionsObj[emotionName] * 100) / 100;
-    if (emotionVal > emotionThreshold) {
-      emotionsArray.push({
-        name: emotionName,
-        val: emotionVal,
-        color: getEmotionColorByName(emotionName)
-      });
-    }
-  }
-
-  if (emotionsArray.length === 0) {
-    return [
-      {
-        name: 'neutral',
-        val: 0.5,
-        color: getEmotionColorByName('neutral')
-      }
-    ];
+  const formattedScore = [];
+  let sentimentRating = null;
+  if (sentimentScore < 40) {
+    sentimentRating = 'negative';
+  } else if (sentimentScore < 60) {
+    sentimentRating = 'neutral';
   } else {
-    return emotionsArray;
+    sentimentRating = 'positive';
   }
+
+  return [
+    {
+      name: sentimentRating,
+      val: sentimentScore,
+      color: getEmotionColorByName(sentimentRating)
+    }
+  ];
 }
+
+// function getAudioEmotionsArray(emotionsObj) {
+//   const emotionsArray = [];
+//
+//   for (let emotionName in emotionsObj) {
+//     const emotionVal = parseInt(emotionsObj[emotionName] * 100) / 100;
+//     if (emotionVal > emotionThreshold) {
+//       emotionsArray.push({
+//         name: emotionName,
+//         val: emotionVal,
+//         color: getEmotionColorByName(emotionName)
+//       });
+//     }
+//   }
+//
+//   if (emotionsArray.length === 0) {
+//     return [
+//       {
+//         name: 'neutral',
+//         val: 0.5,
+//         color: getEmotionColorByName('neutral')
+//       }
+//     ];
+//   } else {
+//     return emotionsArray;
+//   }
+// }
 
 function getVideoEmotionsArray(facesInfo) {
   if (facesInfo.length == 0) return null;
@@ -76,17 +98,13 @@ function getVideoEmotionsArray(facesInfo) {
   }
 }
 
-function getVideoEmotions() {
-  return videoEmotions;
-}
-
 function clearVideoEmotions() {
   videoEmotions = [];
 }
 
-function getAudioEmotions() {
-  return audioEmotions;
-}
+// function getAudioEmotions() {
+//   return audioEmotions;
+// }
 
 function getSumEmotionsFromEmotionsHistory(emotionsHistory) {
   const sumEmotions = {};
@@ -160,9 +178,8 @@ function resetVideoEmotionsHistory() {
 
 // exports.getVideoEmotionAnalysisHtml = getVideoEmotionAnalysisHtml;
 exports.getVideoEmotionsArray = getVideoEmotionsArray;
-exports.getAudioEmotionsArray = getAudioEmotionsArray;
-exports.getVideoEmotions = getVideoEmotions;
-exports.getAudioEmotions = getAudioEmotions;
+exports.getFormattedTextSentiment = getFormattedTextSentiment;
+// exports.getAudioEmotionsArray = getAudioEmotionsArray
 exports.clearVideoEmotions = clearVideoEmotions;
 exports.getAverageEmotionsFromVideoHistory = getAverageEmotionsFromVideoHistory;
 exports.rememberVideoEmotions = rememberVideoEmotions;

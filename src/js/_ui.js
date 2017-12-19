@@ -25,10 +25,10 @@ const $botText = $('#bot-text');
 const $userTextSection = $('#user-text-wrap');
 const $userText = $('#user-text');
 
-const $audioAnalysisSection = $('#audio-analysis-wrap');
+const $textAnalysisSection = $('#text-analysis-wrap');
 // const $audioAnalysisWrap = $('#audio-analysis');
-const audioChartWrapId = 'audio-emotions-chart-wrap';
-// const $audioChartWrap = $(audioChartWrapId);
+const textChartWrapId = 'text-sentiment-chart-wrap';
+// const $audioChartWrap = $(textChartWrapId);
 
 let userTextTimeout = null;
 
@@ -38,7 +38,7 @@ function asyncInit() {
     .then(audio.asyncSetupAudio)
     .then(video.startWatching)
     .then(() => {
-      chart.setupCharts(videoChartWrapId, audioChartWrapId);
+      chart.setupCharts(videoChartWrapId, textChartWrapId);
     });
 }
 
@@ -84,9 +84,9 @@ function setUserText(text = '') {
 
 function setAudioAnalysis(html = '') {
   if (html === '') {
-    hideSection('audio-analysis-wrap');
+    hideSection('text-analysis-wrap');
   } else {
-    showSection('audio-analysis-wrap');
+    showSection('text-analysis-wrap');
   }
   $audioAnalysisWrap.html(html);
 }
@@ -142,7 +142,7 @@ function endProgress() {
 }
 
 function setConversationStageStart() {
-  hideSections(['video-analysis-wrap', 'audio-analysis-wrap']);
+  hideSections(['video-analysis-wrap', 'text-analysis-wrap']);
   resetSections(['video-analysis', 'audio-analysis']);
 
   setUserText();
@@ -150,7 +150,7 @@ function setConversationStageStart() {
 }
 
 function setConversationStageFeelings() {
-  // hideSections(['video-analysis-wrap', 'audio-analysis-wrap']);
+  // hideSections(['video-analysis-wrap', 'text-analysis-wrap']);
   // resetSections('video-analysis', 'audio-analysis');
   // setUserText();
   // setBotText("");
@@ -195,8 +195,6 @@ function processVideoEmotions(emotionsObj) {
 exports.asyncInit = asyncInit;
 exports.setVideoStatus = setVideoStatus;
 exports.setAudioStatus = setAudioStatus;
-// exports.setVideoAnalysis = setVideoAnalysis;
-// exports.setAudioAnalysis = setAudioAnalysis;
 exports.processVideoEmotions = processVideoEmotions;
 exports.showSection = showSection;
 exports.hideSection = hideSection;

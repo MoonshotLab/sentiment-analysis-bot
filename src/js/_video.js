@@ -17,7 +17,6 @@ function hookUpDetectorEvents(detector) {
     // ui.setVideoAnalysis('<h4>No face in frame</h4>');
     // ui.setBotText(`Say "Start Conversation" to begin.`);
     chat.setConversationStage('start');
-    chart.setVideoUpdateStatus(true);
   });
 
   detector.addEventListener('onInitializeFailure', e => {
