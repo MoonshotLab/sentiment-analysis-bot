@@ -1,6 +1,6 @@
 module.exports = {
   audio: {
-    volThreshold: 25,
+    volThreshold: 15,
     detectAudioInterval: 500,
     waitAfterVolumeLength: 0.5 * 1000,
     ambientListeningWindowLength: 15 * 1000
@@ -35,6 +35,9 @@ module.exports = {
     defaultScreensaverTimeoutLength: 30 * 1000,
     conversationMap: {
       start: {
+        next: 'name'
+      },
+      name: {
         next: 'feelings'
       },
       feelings: {

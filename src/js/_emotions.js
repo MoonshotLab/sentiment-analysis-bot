@@ -3,16 +3,46 @@ const Promise = require('bluebird');
 const chat = require('./_chat');
 const ui = require('./_ui');
 const config = require('./_config');
+const chart = require('./_chart');
 
 let videoEmotions = [];
 let audioEmotions = [];
 const emotionThreshold = 0;
+
+let videoEmotionsHistory = [];
 
 const emotionsMap = config.emotions.emotionsMap;
 
 function getEmotionColorByName(emotionName) {
   if (emotionName in emotionsMap) return emotionsMap[emotionName].color;
   throw new Error('unknown emotion', emotionName);
+}
+
+function getAudioEmotionsArray(emotionsObj) {
+  const emotionsArray = [];
+
+  for (let emotionName in emotionsObj) {
+    const emotionVal = parseInt(emotionsObj[emotionName] * 100) / 100;
+    if (emotionVal > emotionThreshold) {
+      emotionsArray.push({
+        name: emotionName,
+        val: emotionVal,
+        color: getEmotionColorByName(emotionName)
+      });
+    }
+  }
+
+  if (emotionsArray.length === 0) {
+    return [
+      {
+        name: 'neutral',
+        val: 0.5,
+        color: getEmotionColorByName('neutral')
+      }
+    ];
+  } else {
+    return emotionsArray;
+  }
 }
 
 function getVideoEmotionsArray(facesInfo) {
@@ -46,23 +76,94 @@ function getVideoEmotionsArray(facesInfo) {
   }
 }
 
-function processVideoFrame(facesInfo) {
-  if (chat.getProcessEmotionsStatus() === true) {
-    videoEmotions = getVideoEmotionsArray(facesInfo);
-    ui.processVideoEmotions(videoEmotions);
-  }
-}
-
 function getVideoEmotions() {
   return videoEmotions;
+}
+
+function clearVideoEmotions() {
+  videoEmotions = [];
 }
 
 function getAudioEmotions() {
   return audioEmotions;
 }
 
+function getSumEmotionsFromEmotionsHistory(emotionsHistory) {
+  const sumEmotions = {};
+  const historyLength = emotionsHistory.length;
+
+  emotionsHistory.map(datum => {
+    datum.map(emotion => {
+      if (emotion.name in sumEmotions !== true) {
+        sumEmotions[emotion.name] = 0;
+      }
+
+      sumEmotions[emotion.name] += emotion.val;
+    });
+  });
+
+  return sumEmotions;
+}
+
+function getRawAvgEmotionsFromSumEmotions(sumEmotions) {
+  const rawAvgEmotions = [];
+
+  for (let emotionName in sumEmotions) {
+    const avgEmotionVal =
+      parseInt(sumEmotions[emotionName] / videoEmotionsHistory.length * 100) /
+      100;
+    rawAvgEmotions.push({
+      name: emotionName,
+      val: avgEmotionVal,
+      color: getEmotionColorByName(emotionName)
+    });
+  }
+
+  return rawAvgEmotions;
+}
+
+function getNormalizedAverageEmotions(emotions) {
+  const totalEmotionsVal = emotions.reduce(
+    (sum, current) => sum + current.val,
+    0
+  );
+
+  const normalizedEmotions = [];
+  emotions.map(emotion => {
+    const normalizedEmotionVal =
+      parseInt(emotion.val / totalEmotionsVal * 100) / 100;
+    normalizedEmotions.push({
+      name: emotion.name,
+      val: normalizedEmotionVal,
+      color: emotion.color
+    });
+  });
+
+  return normalizedEmotions;
+}
+
+function getAverageEmotionsFromVideoHistory() {
+  if (videoEmotionsHistory.length === 0) return null;
+  const sumEmotions = getSumEmotionsFromEmotionsHistory(videoEmotionsHistory);
+  const rawAvgEmotions = getRawAvgEmotionsFromSumEmotions(sumEmotions);
+  const normalizedEmotions = getNormalizedAverageEmotions(rawAvgEmotions);
+  return normalizedEmotions;
+}
+
+function rememberVideoEmotions(emotions) {
+  videoEmotionsHistory.push(emotions);
+}
+
+function resetVideoEmotionsHistory() {
+  videoEmotionsHistory = [];
+}
+
 // exports.getVideoEmotionAnalysisHtml = getVideoEmotionAnalysisHtml;
 exports.getVideoEmotionsArray = getVideoEmotionsArray;
-exports.processVideoFrame = processVideoFrame;
+exports.getAudioEmotionsArray = getAudioEmotionsArray;
 exports.getVideoEmotions = getVideoEmotions;
 exports.getAudioEmotions = getAudioEmotions;
+exports.clearVideoEmotions = clearVideoEmotions;
+exports.getAverageEmotionsFromVideoHistory = getAverageEmotionsFromVideoHistory;
+exports.rememberVideoEmotions = rememberVideoEmotions;
+exports.resetVideoEmotionsHistory = resetVideoEmotionsHistory;

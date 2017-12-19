@@ -6,11 +6,17 @@ const ui = require('./_ui');
 const utils = require('./_utils');
 const screensaver = require('./_screensaver');
 const config = require('./_config');
+const emotions = require('./_emotions');
+const chart = require('./_chart');
 
 const screensaverTimeoutLength = config.chat.defaultScreensaverTimeoutLength; // ms
 
 let faceInFrame = false;
-let processEmotions = true;
+
+let listening = false;
+let recording = false;
+
+let updateVideoChart = false;
 
 let conversationPhase = 'start';
 const conversation = config.chat.conversationMap;
@@ -21,8 +27,34 @@ function asyncInit() {
   });
 }
 
+function processVideoFrame(faces) {
+  const newFaceStatus = faces.length > 0;
+  if (newFaceStatus === true) {
+    keepAwake();
+
+    if (recording || updateVideoChart) {
+      const processedEmotions = emotions.getVideoEmotionsArray(faces);
+
+      if (recording) emotions.rememberVideoEmotions(processedEmotions);
+      if (updateVideoChart) chart.updateVideoData(processedEmotions);
+    }
+
+    if (listening !== true) {
+      audio.startListening();
+      listening = true;
+    }
+  } else {
+    if (updateVideoChart) chart.updateVideoData();
+  }
+
+  if (newFaceStatus !== faceInFrame) {
+    setFaceStatus(newFaceStatus);
+  }
+}
+
 function handleAudioProcessingSuccess(res) {
   const userText = res.transcription;
+  console.log(res);
 
   console.log('text', userText, 'conversation phase', conversationPhase);
   ui.setUserText(userText);
@@ -30,14 +62,18 @@ function handleAudioProcessingSuccess(res) {
   switch (conversationPhase) {
     case 'start':
       if (utils.strHas(userText, 'start') !== true) {
-        setConversationStageFeelings();
+        setConversationStageName();
       } else {
         asyncBotSay(
           "Although I don't think you said 'Start Conversation', let's go ahead and get started. No harm, no foul."
-        ).then(setConversationStageFeelings);
+        ).then(setConversationStageName);
       }
       break;
+    case 'name':
+      setConversationStageFeelings(userText);
+      break;
     case 'feelings':
+      setConversationStageFeelingsAnalysis(userText, res.emotions);
       break;
     case 'joke':
       break;
@@ -93,16 +129,49 @@ function setConversationStage(stage) {
 function setConversationStageStart() {
   conversationPhase = 'start';
   ui.setConversationStage('start');
+  recording = false;
+  updateVideoChart = true;
+  // emotions.startMonitoringVideo();
+  // setTimeout(() => {
+  //   emotions.stopMonitoringVideo();
+  // }, 5 * 1000);
   // asyncBotSay('Say "Start" to begin conversation.');
 }
 
-function setConversationStageFeelings() {
-  conversationPhase = 'feelings';
-  ui.setConversationStage('feelings');
-  asyncBotSay("I'm in my feelings");
+function setConversationStageName() {
+  conversationPhase = 'name';
+  ui.setConversationStage('name');
+  asyncBotSay(`Hello, I'm Emobot. What's your name?`);
+  recording = false;
+  updateVideoChart = true;
   // hideSections(['video-analysis-wrap', 'audio-analysis-wrap']);
   // resetSections('video-analysis', 'audio-analysis');
   // setBotText('Start Conversation');
+}
+
+function setConversationStageFeelings(name) {
+  conversationPhase = 'feelings';
+  ui.setConversationStage('feelings');
+  asyncBotSay(`Hi ${_.capitalize(name)}. How are you feeling today?`);
+  recording = true;
+  updateVideoChart = false;
+  emotions.resetVideoEmotionsHistory();
+
+  // asyncBotSay("I'm in my feelings");
+  // hideSections(['video-analysis-wrap', 'audio-analysis-wrap']);
+  // resetSections('video-analysis', 'audio-analysis');
+  // setBotText('Start Conversation');
+}
+
+function setConversationStageFeelingsAnalysis(response, audioEmotions) {
+  console.log(response, audioEmotions);
+  recording = false;
+  updateVideoChart = false;
+  const avgEmotions = emotions.getAverageEmotionsFromVideoHistory();
+  console.log(avgEmotions);
+  const formattedAudioEmotions = emotions.getAudioEmotionsArray(audioEmotions);
+  chart.updateVideoData(avgEmotions);
+  chart.updateAudioData(formattedAudioEmotions);
 }
 
 function asyncBotSay(text) {
@@ -140,6 +209,7 @@ function setFaceStatus(newFaceStatus) {
     // $emotionsWrap.show();
   } else {
     ui.setVideoStatus('No face in frame');
+    emotions.clearVideoEmotions();
     // $faceStatus.text('No face in frame');
     // $emotionsWrap.hide();
   }
@@ -148,10 +218,6 @@ function setFaceStatus(newFaceStatus) {
 
 function getFaceStatus() {
   return faceInFrame === true;
-}
-
-function getProcessEmotionsStatus() {
-  return processEmotions === true;
 }
 
 exports.asyncInit = asyncInit;
@@ -163,4 +229,4 @@ exports.setConversationStage = setConversationStage;
 exports.keepAwake = keepAwake;
 exports.setFaceStatus = setFaceStatus;
 exports.getFaceStatus = getFaceStatus;
-exports.getProcessEmotionsStatus = getProcessEmotionsStatus;
+exports.processVideoFrame = processVideoFrame;

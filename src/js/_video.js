@@ -17,7 +17,7 @@ function hookUpDetectorEvents(detector) {
     // ui.setVideoAnalysis('<h4>No face in frame</h4>');
     // ui.setBotText(`Say "Start Conversation" to begin.`);
     chat.setConversationStage('start');
-    chart.startVideoChart();
+    chart.setVideoUpdateStatus(true);
   });
 
   detector.addEventListener('onInitializeFailure', e => {
@@ -40,24 +40,8 @@ function hookUpDetectorEvents(detector) {
     timestamp
   ) {
     frames++;
-    if (frames % 2 === 0) {
-      const faceInFrame = chat.getFaceStatus();
-      if (faces.length > 0) {
-        chat.keepAwake();
-        if (faceInFrame !== true) {
-          chat.setFaceStatus(true);
-          // ui.setVideoAnalysis('<h4>Face in frame</h4>');
-          audio.startListening();
-        }
-        emotions.processVideoFrame(faces);
-      } else {
-        if (faceInFrame === true) {
-          chat.setFaceStatus(false);
-          // ui.setVideoAnalysis('<h4>No face in frame</h4>');
-          // audio.hideSection();
-        }
-      }
-    }
+    if (frames % 2 === 0) chat.processVideoFrame(faces);
+    if (frames > 100) frames = 0;
   });
 
   /*

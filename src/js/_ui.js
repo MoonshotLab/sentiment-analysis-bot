@@ -144,8 +144,9 @@ function endProgress() {
 function setConversationStageStart() {
   hideSections(['video-analysis-wrap', 'audio-analysis-wrap']);
   resetSections(['video-analysis', 'audio-analysis']);
+
   setUserText();
-  setBotText('Say "Start Conversation" to begin.');
+  setBotText('Say hello to start a conversation with Emobot');
 }
 
 function setConversationStageFeelings() {
