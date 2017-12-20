@@ -26,7 +26,6 @@ function getFormattedTextSentiment(sentimentScore) {
 
   if (sentimentScore < 0.4) {
     sentimentRating = 'negative';
-    sentimentScore = 1 - sentimentScore;
   } else if (sentimentScore < 0.6) {
     sentimentRating = 'neutral';
   } else {
