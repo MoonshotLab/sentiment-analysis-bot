@@ -141,7 +141,7 @@ function setConversationStageStart() {
 function setConversationStageName() {
   conversationPhase = 'name';
   ui.setConversationStage('name');
-  asyncBotSay(`Hello, I'm Emobot. What's your name?`);
+  asyncBotSay(`Hello, I'm Sal. What's your name?`);
   recording = false;
   updateVideoChart = true;
 }

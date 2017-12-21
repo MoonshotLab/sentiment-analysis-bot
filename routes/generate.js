@@ -18,7 +18,7 @@ AWS.config.update({
 });
 
 const polly = new AWS.Polly();
-const pollyVoiceId = 'Joanna';
+const pollyVoiceId = 'Matthew';
 const pollyOutputFormat = 'mp3';
 
 function asyncSaveRecording(inputText, data) {
