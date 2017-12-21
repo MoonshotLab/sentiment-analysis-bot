@@ -43,10 +43,10 @@ function getComparisonFeelingText(videoEmotions, textSentiment) {
       return `Wow, that's exactly what I sensed. According to both text and video analysis, it sounds like you're feeling good. You're pretty self aware!`;
       break;
     case 'positive neutral':
-      return `Even though my text analysis of your response is fairly neutral, my video analysis shows that you're feeling good. Nice!`;
+      return `Although my text analysis of your response is fairly neutral, my video analysis shows that you're feeling good. Nice!`;
       break;
     case 'positive negative':
-      return `Interesting. My video analysis shows that you're feeling good but my text analysis tends toward the negative. Are you trying to fool me?`;
+      return `Interesting. My video analysis shows that you're feeling good but my text analysis leans to the negative. You're a tricky one.`;
       break;
     case 'neutral positive':
       return `My video analysis of your response is fairly neutral, but my text analysis of your response is positive. Are you trying to talk yourself into being happy? (Just kidding).`;
@@ -61,10 +61,10 @@ function getComparisonFeelingText(videoEmotions, textSentiment) {
       return `Interesting. My text analysis indicates a positive response, but my video analysis shows the opposite! Trying to talk yourself into being happy? (Just kidding).`;
       break;
     case 'negative neutral':
-      return `Even though my text analysis of your response is fairly neutral, my video analysis shows that you aren't feeling so hot. Hope your day gets better!`;
+      return `Although my text analysis of your response is fairly neutral, my video analysis shows that you're feeling a little down. Hope your day gets better!`;
       break;
     case 'negative negative':
-      return `Bummer! Both my video and text analysis of your response turn up negative. At least you're consistent! Cheer up, friend.`;
+      return `Bummer! Both my video and text analysis of your response turn up negative. At least you're consistent! That's something to feel positive about.`;
       break;
   }
 
