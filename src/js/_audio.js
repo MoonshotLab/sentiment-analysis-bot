@@ -152,6 +152,7 @@ function setupMediaSource(stream) {
 }
 
 function processAudioBlob(blob) {
+  stopListening();
   const formData = new FormData();
   formData.append('data', blob);
 
@@ -168,12 +169,14 @@ function processAudioBlob(blob) {
       ui.endProgress();
       ui.setAudioStatus('Audio processed successfully');
       chat.handleAudioProcessingSuccess(res);
+      startListening();
     })
     .catch(e => {
       console.log('post error', e);
       ui.endProgress();
-      ui.setUserText('Error processing audio.');
+      // ui.setUserText('Error processing audio.');
       chat.handleAudioProcessingError(e);
+      startListening();
     });
 }
 

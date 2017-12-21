@@ -47,7 +47,8 @@ function chartFactory(sketch) {
       sketch.fill(emotion.color);
       const barX = halfMargin;
       const barY = halfMargin * (i + 1) + i * barHeight;
-      const barWidth = emotion.val * (chartWidth - margin);
+      let barWidth = emotion.val * (chartWidth - margin);
+      if (emotion.name === 'negative') barWidth = chartWidth - barWidth; // invert to make negative more obvious
 
       sketch.rect(barX, barY, barWidth, barHeight);
       sketch.fill(255);

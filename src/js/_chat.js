@@ -98,6 +98,7 @@ function handleAudioProcessingSuccess(res) {
 
 function handleAudioProcessingError(error) {
   console.log('error processing audio', error);
+  asyncBotSay(`I'm sorry, I didn't get that. Say again?`);
   // setTimeout(() => {
   //   ui.setAudioStatus('Listening...');
   //   ui.setUserText();
@@ -161,7 +162,7 @@ function setConversationStageFeelings(nameText) {
 
 function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
   audio.stopListening();
-  console.log(response, textSentimentScore);
+  // console.log(response, textSentimentScore);
   recording = false;
   updateVideoChart = false;
   const avgVideoEmotions = emotions.getAverageEmotionsFromVideoHistory();
@@ -176,17 +177,21 @@ function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
     avgVideoEmotions,
     formattedTextSentiment[0]
   );
-  console.log(comparisonFeelingText);
+  // console.log(comparisonFeelingText);
   asyncBotSay(comparisonFeelingText)
     .then(() => {
       return Promise.delay(2 * 1000);
     })
     .then(() => {
       setConversationStageJokeAsk();
+    })
+    .catch(e => {
+      console.log(e);
     });
 }
 
 function setConversationStageJokeAsk() {
+  console.log('joke ask');
   audio.startListening();
   conversationPhase = 'joke-ask';
   ui.setConversationStage('joke-ask');
