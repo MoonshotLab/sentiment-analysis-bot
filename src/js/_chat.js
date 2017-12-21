@@ -266,6 +266,7 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
 
 function asyncBotSay(text) {
   return new Promise((resolve, reject) => {
+    audio.stopListening();
     audio
       .asyncGenerateAudio(text)
       .then(res => {
@@ -274,10 +275,12 @@ function asyncBotSay(text) {
       })
       .then(res => {
         console.log('bot say success');
+        audio.startListening();
         resolve();
       })
       .catch(e => {
         console.log('error saying', text, e);
+        audio.startListening();
         reject(e);
       });
   });
