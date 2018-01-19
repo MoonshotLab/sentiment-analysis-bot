@@ -16,6 +16,9 @@ let faceInFrame = false;
 
 let listening = false;
 let recording = false;
+let talking = false;
+
+let repeatTimeout = null;
 
 let updateVideoChart = false;
 
@@ -34,15 +37,10 @@ function processVideoFrame(faces) {
     keepAwake();
 
     if (recording || updateVideoChart) {
-      const processedEmotions = emotions.getVideoEmotionsArray(faces);
+      const processedEmotions = emotions.getVideoEmotionsObj(faces);
 
       if (recording) emotions.rememberVideoEmotions(processedEmotions);
       if (updateVideoChart) chart.updateVideoData(processedEmotions);
-    }
-
-    if (listening !== true) {
-      audio.startListening();
-      listening = true;
     }
   } else {
     if (updateVideoChart) chart.updateVideoData();
@@ -62,13 +60,7 @@ function handleAudioProcessingSuccess(res) {
 
   switch (conversationPhase) {
     case 'start':
-      if (utils.strHas(userText, 'start') !== true) {
-        setConversationStageName();
-      } else {
-        asyncBotSay(
-          "Although I don't think you said 'Start Conversation', let's go ahead and get started. No harm, no foul."
-        ).then(setConversationStageName);
-      }
+      setConversationStageName();
       break;
     case 'name':
       setConversationStageFeelings(userText);
@@ -98,7 +90,7 @@ function handleAudioProcessingSuccess(res) {
 
 function handleAudioProcessingError(error) {
   console.log('error processing audio', error);
-  asyncBotSay(`I'm sorry, I didn't get that. Say again?`);
+  asyncBotAsk(`I'm sorry, I didn't get that. Say again?`);
   // setTimeout(() => {
   //   ui.setAudioStatus('Listening...');
   //   ui.setUserText();
@@ -135,14 +127,16 @@ function setConversationStage(stage) {
 function setConversationStageStart() {
   conversationPhase = 'start';
   ui.setConversationStage('start');
+  audio.startListening();
   recording = false;
   updateVideoChart = true;
 }
 
 function setConversationStageName() {
   conversationPhase = 'name';
+  ui.showConvoMain();
   ui.setConversationStage('name');
-  asyncBotSay(`Hello, I'm Sal. What's your name?`);
+  asyncBotAsk(`Hello, I'm Sal. What's your name?`);
   recording = false;
   updateVideoChart = true;
 }
@@ -154,7 +148,7 @@ function setConversationStageFeelings(nameText) {
   // make sure name text doesn't contain `my name is` or `my name's`
   const name = text.formatNameStr(nameText);
 
-  asyncBotSay(`Hi ${_.capitalize(name)}. How are you feeling today?`);
+  asyncBotAsk(`Hi ${_.capitalize(name)}. How are you feeling today?`);
   recording = true;
   updateVideoChart = false;
   emotions.resetVideoEmotionsHistory();
@@ -166,18 +160,25 @@ function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
   recording = false;
   updateVideoChart = false;
   const avgVideoEmotions = emotions.getAverageEmotionsFromVideoHistory();
+  console.log('textsentimentscore before', textSentimentScore);
   const formattedTextSentiment = emotions.getFormattedTextSentiment(
     textSentimentScore
   );
 
+  console.log('avgVideoEmotions before', avgVideoEmotions);
   chart.updateVideoData(avgVideoEmotions);
+  console.log('avgVideoEmotions after', avgVideoEmotions);
+
+  console.log('formattedTextSentiment before', formattedTextSentiment);
   chart.updateTextSentimentData(formattedTextSentiment);
+  console.log('formattedTextSentiment after', formattedTextSentiment);
 
   const comparisonFeelingText = text.getComparisonFeelingText(
     avgVideoEmotions,
-    formattedTextSentiment[0]
+    formattedTextSentiment
   );
-  // console.log(comparisonFeelingText);
+
+  console.log('comparisonFeelingText', comparisonFeelingText);
   asyncBotSay(comparisonFeelingText)
     .then(() => {
       return Promise.delay(2 * 1000);
@@ -196,7 +197,7 @@ function setConversationStageJokeAsk() {
   conversationPhase = 'joke-ask';
   ui.setConversationStage('joke-ask');
   chart.resetCharts(true);
-  asyncBotSay(
+  asyncBotAsk(
     `Alright, next I'm going to tell you a joke. How does that sound?`
   );
 }
@@ -230,7 +231,7 @@ function setConverastionStageJoke(textSentimentScore = 0.5) {
     })
     .then(() => {
       audio.startListening();
-      return asyncBotSay(`What did you think of my joke?`);
+      return asyncBotAsk(`What did you think of my joke?`);
     });
 }
 
@@ -244,6 +245,8 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
 
   chart.updateVideoData(avgVideoEmotions);
   chart.updateTextSentimentData(formattedTextSentiment);
+
+  console.log(formattedTextSentiment);
 
   const comparisonJokeText = text.getComparisonJokeText(
     avgVideoEmotions,
@@ -260,12 +263,44 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
     })
     .then(() => {
       // RESET EVERYTHING!
-      location.reload(); // FIXME
+      // location.reload(); // FIXME
+      resetConversation();
     });
+}
+
+function asyncBotAsk(text, isRepeat = false) {
+  return new Promise((resolve, reject) => {
+    clearTimeout(repeatTimeout);
+
+    if (isRepeat === true) {
+      console.log('repeat');
+      resetConversation();
+    }
+
+    asyncBotSay(text)
+      .then(() => {
+        audio.startListening();
+
+        if (isRepeat !== true) {
+          console.log('setting timeout for', config.chat.repeatTimeoutLength);
+          repeatTimeout = setTimeout(() => {
+            console.log('timeout!');
+            asyncBotAsk(text, true);
+          }, config.repeatTimeoutLength);
+        }
+        resolve();
+      })
+      .catch(e => {
+        reject(e);
+      });
+  });
 }
 
 function asyncBotSay(text) {
   return new Promise((resolve, reject) => {
+    if (talking) reject(new Error('bot already talking'));
+
+    talking = true;
     audio.stopListening();
     audio
       .asyncGenerateAudio(text)
@@ -275,12 +310,13 @@ function asyncBotSay(text) {
       })
       .then(res => {
         console.log('bot say success');
-        audio.startListening();
+        talking = false;
+
         resolve();
       })
       .catch(e => {
         console.log('error saying', text, e);
-        audio.startListening();
+        talking = false;
         reject(e);
       });
   });
@@ -298,6 +334,7 @@ function goToSleep() {
 
 function wakeUp() {
   screensaver.stop();
+  audio.startListening();
 }
 
 function setFaceStatus(newFaceStatus) {
@@ -309,7 +346,6 @@ function setFaceStatus(newFaceStatus) {
     // $emotionsWrap.show();
   } else {
     ui.setVideoStatus('No face in frame');
-    emotions.clearVideoEmotions();
     // $faceStatus.text('No face in frame');
     // $emotionsWrap.hide();
   }
@@ -318,6 +354,14 @@ function setFaceStatus(newFaceStatus) {
 
 function getFaceStatus() {
   return faceInFrame === true;
+}
+
+function resetConversation() {
+  console.log('resetting conversation');
+  chart.resetCharts(true);
+  audio.startListening();
+  emotions.resetVideoEmotionsHistory();
+  showConvoIntro();
 }
 
 exports.asyncInit = asyncInit;
@@ -330,3 +374,4 @@ exports.keepAwake = keepAwake;
 exports.setFaceStatus = setFaceStatus;
 exports.getFaceStatus = getFaceStatus;
 exports.processVideoFrame = processVideoFrame;
+exports.setConversationStageName = setConversationStageName;

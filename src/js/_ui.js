@@ -1,11 +1,16 @@
 const Promise = require('bluebird');
-const NProgress = require('nprogress');
 
 const audio = require('./_audio');
 const video = require('./_video');
 const screensaver = require('./_screensaver');
 const chat = require('./_chat');
 const chart = require('./_chart');
+
+const $inProgress = $('.in-progress');
+
+const $convoIntro = $('#convo-intro');
+const $convoMain = $('#convo-main');
+const $preloading = $('#preloading');
 
 const $pageStatusSection = $('#page-status-wrap');
 const $videoStatus = $('#video-status');
@@ -31,6 +36,28 @@ const textChartWrapId = 'text-sentiment-chart-wrap';
 // const $audioChartWrap = $(textChartWrapId);
 
 let userTextTimeout = null;
+
+function getConvoStage() {
+  if ($convoMain.is(':visible')) {
+    return 'main';
+  } else if ($convoIntro.is(':visible')) {
+    return 'intro';
+  } else {
+    return 'loading';
+  }
+}
+
+function showConvoMain() {
+  $preloading.hide();
+  $convoIntro.hide();
+  $convoMain.show();
+}
+
+function showConvoIntro() {
+  $preloading.hide();
+  $convoMain.hide();
+  $convoIntro.show();
+}
 
 function asyncInit() {
   return video
@@ -79,7 +106,11 @@ function setUserText(text = '') {
     setTimeout(setUserText, text.length * 200, '');
   }
 
-  $userText.text(text);
+  if (text !== '') {
+    $userText.text(`"${text}"`);
+  } else {
+    $userText.text('');
+  }
 }
 
 function setAudioAnalysis(html = '') {
@@ -136,21 +167,24 @@ function resetSections(sectionNames) {
 }
 
 function startProgress() {
-  NProgress.start();
-  return;
+  console.log('start progress');
+  $inProgress.css('visibility', 'visible');
 }
 
 function endProgress() {
-  NProgress.done();
-  return;
+  console.log('end progress');
+  $inProgress.css('visibility', 'hidden');
 }
 
 function setConversationStageStart() {
+  showConvoIntro();
+  // showConvoMain(); // remove!
   hideSections(['video-analysis-wrap', 'text-analysis-wrap']);
   resetSections(['video-analysis', 'audio-analysis']);
 
   setUserText();
   setBotText('Say hello to start a conversation with Emobot');
+  audio.startListening();
 }
 
 function setConversationStageFeelings() {
@@ -196,17 +230,9 @@ function getVideoEmotionAnalysisHtml(emotionsObj) {
   return html;
 }
 
-function processVideoEmotions(emotionsObj) {
-  showSection('video-analysis-wrap');
-  chart.updateVideoData(emotionsObj);
-  // const videoEmotionAnalysisHtml = getVideoEmotionAnalysisHtml(emotionsObj);
-  // ui.setVideoAnalysis(videoEmotionAnalysisHtml);
-}
-
 exports.asyncInit = asyncInit;
 exports.setVideoStatus = setVideoStatus;
 exports.setAudioStatus = setAudioStatus;
-exports.processVideoEmotions = processVideoEmotions;
 exports.showSection = showSection;
 exports.hideSection = hideSection;
 exports.setBotText = setBotText;
@@ -216,3 +242,6 @@ exports.endProgress = endProgress;
 exports.setConversationStage = setConversationStage;
 exports.getVideoEmotionAnalysisHtml = getVideoEmotionAnalysisHtml;
 exports.hideAnalysisSections = hideAnalysisSections;
+exports.showConvoIntro = showConvoIntro;
+exports.showConvoMain = showConvoMain;
+exports.getConvoStage = getConvoStage;

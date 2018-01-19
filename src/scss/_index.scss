@@ -1,30 +1,162 @@
-body#index {
-  &,
-  main,
-  #wrapper {
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-  }
+html,
+body {
+  overflow: hidden;
+  font-family: 'calluna-sans', sans-serif;
+  color: $white;
+  height: 100vh;
+  width: 100vw;
+  // background: pink;
+  background-color: $darkGray;
+}
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+}
+
+body {
   section {
     padding: 2.5%;
   }
 
-  #wrapper {
+  main {
+    max-width: 1700px;
+    max-height: 850px;
+    margin: 0 auto;
+  }
+
+  #preloading {
+    height: 100%;
+    text-align: center;
+
+    .content {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    h1 {
+      font-size: 80px;
+      margin-bottom: 0.5em;
+    }
+
+    img {
+      display: block;
+      margin: 0 auto;
+      max-width: 400px;
+    }
+  }
+
+  #convo-main {
+    display: none;
+
+    .wrapper {
+      display: grid;
+      // grid-template-columns: 1fr 2fr 1fr;
+      grid-template-columns: 20% 60% 20%;
+      // grid-template-rows: 2fr 5fr 2fr;
+      grid-template-rows: 20% 60% 20%;
+      // grid-gap: 1%;
+
+      grid-template-areas:
+        'page-status user-text .'
+        'video-analysis camera audio-analysis'
+        'in-progress bot-text .';
+    }
+
+    .in-progress {
+      grid-area: in-progress;
+    }
+  }
+
+  #convo-intro {
+    display: none;
+    height: 100%;
+
+    .bubble {
+      // width: 400px;
+      // height: 400px;
+      position: absolute;
+      display: block;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .intro-text {
+      margin: 0;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 48px;
+      max-width: 600px;
+    }
+
+    .wrapper {
+      display: grid;
+      // grid-template-columns: 1fr 2fr 1fr;
+      grid-template-columns: 20% 60% 20%;
+      // grid-template-rows: 2fr 5fr 2fr;
+      grid-template-rows: 20% 60% 20%;
+      // grid-gap: 1%;
+
+      grid-template-areas:
+        '. . .'
+        '. intro-content .'
+        '. . .';
+    }
+
+    .intro-content {
+      grid-area: intro-content;
+    }
+
+    .in-progress {
+      position: absolute;
+      width: 10%;
+      height: 10%;
+      bottom: 10%;
+      left: 10%;
+    }
+  }
+
+  main,
+  .wrapper {
+    height: 100%;
+  }
+
+  main {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .wrapper {
     padding: 2.5%;
-    display: grid;
+    overflow: hidden;
+    margin: auto;
 
-    // grid-template-columns: 1fr 2fr 1fr;
-    grid-template-columns: 25% 50% 25%;
-    // grid-template-rows: 2fr 5fr 2fr;
-    grid-template-rows: 30% 50% 20%;
-    // grid-gap: 1%;
+    img {
+      max-width: 100%;
+      max-height: 100%;
+    }
 
-    grid-template-areas:
-      'page-status camera user-text'
-      'video-analysis camera audio-analysis'
-      '. bot-text .';
+    p {
+      margin: 0;
+      line-height: 1.5em;
+    }
+  }
+
+  .in-progress {
+    height: 100%;
+
+    img {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
   }
 
   #page-status-wrap {
@@ -33,10 +165,20 @@ body#index {
     // display: none;
   }
 
+  #video-analysis-wrap,
+  #text-analysis-wrap {
+    img.section-title {
+      display: block;
+      width: 80%;
+      margin: 0 auto;
+      max-width: 150px;
+    }
+  }
+
   #video-analysis-wrap {
     // background-color: palevioletred;
     grid-area: video-analysis;
-    display: none;
+    // display: none;
   }
 
   #camera-wrap {
@@ -69,23 +211,32 @@ body#index {
   #bot-text-wrap {
     // background-color: papayawhip;
     grid-area: bot-text;
-    display: none;
+    // display: none;
   }
 
   #user-text-wrap {
     // background-color: lightblue;
     grid-area: user-text;
-    display: none;
+    // display: none;
+  }
+
+  #user-text {
+    color: $lightBlue;
+  }
+
+  #bot-text {
+    font-size: 36px;
   }
 
   #bot-text,
   #user-text {
     text-align: center;
+    font-weight: 400;
   }
 
   #text-analysis-wrap {
     // background-color: violet;
     grid-area: audio-analysis;
-    display: none;
+    // display: none;
   }
 }

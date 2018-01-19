@@ -42,6 +42,7 @@ function isActivated() {
 }
 
 function keepAwake(timeoutLength, awakeCb, sleepCb) {
+  console.log('keepalive');
   if (isActivated()) {
     stop();
     awakeCb();

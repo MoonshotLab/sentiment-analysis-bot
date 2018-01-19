@@ -11,22 +11,32 @@ function formatNameStr(nameStr) {
 
 function getNormalizedVideoSentiment(videoEmotions) {
   let normalizedVideoSentiment = 0;
-  for (let i = 0; i < videoEmotions.length; i++) {
-    if (videoEmotions[i].name === 'joy')
-      normalizedVideoSentiment += videoEmotions[i].val;
-    if (videoEmotions[i].name === 'sadness')
-      normalizedVideoSentiment -= videoEmotions[i].val;
-  }
+
+  console.log('videoEmotions', videoEmotions);
+
+  if ('joy' in videoEmotions) normalizedVideoSentiment += videoEmotions['joy'];
+  if ('sadness' in videoEmotions)
+    normalizedVideoSentiment -= videoEmotions['sadness'];
+
   return normalizedVideoSentiment;
 }
 
 function getNormalizedTextSentiment(textSentiment) {
-  return utils.mapRange(textSentiment.val, 0, 1, -1, 1); // -1 for negative, 0 for neutral, 1 for positive
+  console.log('hi', textSentiment);
+  let sentimentVal = 0;
+  if (!!textSentiment && 'val' in textSentiment)
+    sentimentVal = textSentiment.val;
+  return utils.mapRange(sentimentVal, 0, 1, -1, 1); // -1 for negative, 0 for neutral, 1 for positive
 }
 
 function getComparisonFeelingText(videoEmotions, textSentiment) {
+  console.log('videoEmotions before', videoEmotions);
+  console.log('textSentiment before', videoEmotions);
   const normalizedVideoSentiment = getNormalizedVideoSentiment(videoEmotions);
   const normalizedTextSentiment = getNormalizedTextSentiment(textSentiment);
+
+  console.log('normalizedVideoSentiment', normalizedVideoSentiment);
+  console.log('normalizedTextSentiment', normalizedTextSentiment);
 
   // compare video with text analysis
   const [dominantVideoSentiment, dominantTextSentiment] = [

@@ -100,7 +100,7 @@ function configureDetector(detector) {
 
   detector.detectEmotions.anger = true;
   detector.detectEmotions.joy = true;
-  detector.detectEmotions.fear = true;
+  detector.detectEmotions.fear = false;
   detector.detectEmotions.sadness = true;
   detector.detectEmotions.surprise = true;
 }

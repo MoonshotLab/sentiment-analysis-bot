@@ -5,9 +5,8 @@ const ui = require('./_ui');
 const config = require('./_config');
 const chart = require('./_chart');
 
-let videoEmotions = [];
 // let audioEmotions = [];
-const emotionThreshold = 0;
+const emotionThreshold = 0.1;
 
 let videoEmotionsHistory = [];
 
@@ -19,7 +18,8 @@ function getEmotionColorByName(emotionName) {
 }
 
 function getFormattedTextSentiment(sentimentScore) {
-  sentimentScore = parseInt(sentimentScore * 100) / 100;
+  console.log('sentiment score', sentimentScore);
+  sentimentScore = parseInt(sentimentScore * 10) / 10;
 
   const formattedScore = [];
   let sentimentRating = null;
@@ -32,13 +32,11 @@ function getFormattedTextSentiment(sentimentScore) {
     sentimentRating = 'positive';
   }
 
-  return [
-    {
-      name: sentimentRating,
-      val: sentimentScore,
-      color: getEmotionColorByName(sentimentRating)
-    }
-  ];
+  return {
+    name: sentimentRating,
+    val: sentimentScore,
+    color: getEmotionColorByName(sentimentRating)
+  };
 }
 
 // function getAudioEmotionsArray(emotionsObj) {
@@ -68,35 +66,22 @@ function getFormattedTextSentiment(sentimentScore) {
 //   }
 // }
 
-function getVideoEmotionsArray(facesInfo) {
+function getVideoEmotionsObj(facesInfo) {
   if (facesInfo.length == 0) return null;
 
   // for now, only consider first face
   const emotions = facesInfo[0].emotions;
-  const emotionsArray = [];
 
   for (let emotionName in emotions) {
-    const emotionVal = parseInt(emotions[emotionName]) / 100;
+    const emotionVal = parseInt(emotions[emotionName] * 10) / 1000;
     if (emotionVal > emotionThreshold) {
-      emotionsArray.push({
-        name: emotionName,
-        val: emotionVal,
-        color: getEmotionColorByName(emotionName)
-      });
+      emotions[emotionName] = emotionVal;
+    } else {
+      emotions[emotionName] = 0;
     }
   }
 
-  if (emotionsArray.length === 0) {
-    return [
-      {
-        name: 'neutral',
-        val: 0.5,
-        color: getEmotionColorByName('neutral')
-      }
-    ];
-  } else {
-    return emotionsArray;
-  }
+  return emotions;
 }
 
 function clearVideoEmotions() {
@@ -112,13 +97,13 @@ function getSumEmotionsFromEmotionsHistory(emotionsHistory) {
   const historyLength = emotionsHistory.length;
 
   emotionsHistory.map(datum => {
-    datum.map(emotion => {
-      if (emotion.name in sumEmotions !== true) {
-        sumEmotions[emotion.name] = 0;
+    for (let emotion in datum) {
+      if (emotion in sumEmotions !== true) {
+        sumEmotions[emotion] = 0;
       }
 
-      sumEmotions[emotion.name] += emotion.val;
-    });
+      sumEmotions[emotion] += datum[emotion];
+    }
   });
 
   return sumEmotions;
@@ -142,30 +127,39 @@ function getRawAvgEmotionsFromSumEmotions(sumEmotions) {
 }
 
 function getNormalizedAverageEmotions(emotions) {
+  console.log('emotionsPreNormalization', emotions);
   const totalEmotionsVal = emotions.reduce(
     (sum, current) => sum + current.val,
     0
   );
 
-  const normalizedEmotions = [];
+  console.log(totalEmotionsVal);
+
+  const normalizedEmotions = {};
+
   emotions.map(emotion => {
-    const normalizedEmotionVal =
-      parseInt(emotion.val / totalEmotionsVal * 100) / 100;
-    normalizedEmotions.push({
-      name: emotion.name,
-      val: normalizedEmotionVal,
-      color: emotion.color
-    });
+    if (totalEmotionsVal > 0) {
+      const normalizedEmotionVal =
+        parseInt(emotion.val / totalEmotionsVal * 100) / 100;
+
+      normalizedEmotions[emotion.name] = normalizedEmotionVal || 0;
+    } else {
+      normalizedEmotions[emotion.name] = 0;
+    }
   });
 
   return normalizedEmotions;
 }
 
 function getAverageEmotionsFromVideoHistory() {
+  console.log('videoEmotionsHistory', videoEmotionsHistory);
   if (videoEmotionsHistory.length === 0) return null;
   const sumEmotions = getSumEmotionsFromEmotionsHistory(videoEmotionsHistory);
+  console.log('sumEmotions', sumEmotions);
   const rawAvgEmotions = getRawAvgEmotionsFromSumEmotions(sumEmotions);
+  console.log('rawAvgEmotions', rawAvgEmotions);
   const normalizedEmotions = getNormalizedAverageEmotions(rawAvgEmotions);
+  console.log('normalizedEmotions', normalizedEmotions);
   return normalizedEmotions;
 }
 
@@ -189,7 +183,7 @@ function getDominantSentimentFromNormalizedVals(normalizedVal) {
 }
 
 // exports.getVideoEmotionAnalysisHtml = getVideoEmotionAnalysisHtml;
-exports.getVideoEmotionsArray = getVideoEmotionsArray;
+exports.getVideoEmotionsObj = getVideoEmotionsObj;
 exports.getFormattedTextSentiment = getFormattedTextSentiment;
 // exports.getAudioEmotionsArray = getAudioEmotionsArray
 exports.clearVideoEmotions = clearVideoEmotions;

@@ -1,13 +1,13 @@
 module.exports = {
   audio: {
-    volThreshold: 15,
+    volThreshold: 10,
     detectAudioInterval: 500,
     waitAfterVolumeLength: 0.5 * 1000,
     ambientListeningWindowLength: 15 * 1000
   },
   chart: {
-    width: 500,
-    height: 225
+    width: 300,
+    height: 300
   },
   emotions: {
     emotionsMap: {
@@ -23,9 +23,6 @@ module.exports = {
       sadness: {
         color: 'blue'
       },
-      fear: {
-        color: 'black'
-      },
       surprise: {
         color: 'mediumpurple'
       },
@@ -38,7 +35,8 @@ module.exports = {
     }
   },
   chat: {
-    defaultScreensaverTimeoutLength: 30 * 1000,
+    defaultScreensaverTimeoutLength: 2 * 60 * 1000,
+    repeatTimeoutLength: 10 * 1000,
     conversationMap: {
       start: {
         next: 'name'

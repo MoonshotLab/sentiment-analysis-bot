@@ -4,6 +4,9 @@ const ui = require('./_ui');
 const chat = require('./_chat');
 const config = require('./_config');
 
+let listening = false;
+let processing = false;
+
 let recordingInterval = null; // reference to setInterval
 
 let audioContext = null;
@@ -32,17 +35,23 @@ function asyncGenerateAudio(text) {
 
 function asyncGenerateAndSay(text) {
   return new Promise((resolve, reject) => {
+    stopListening();
     asyncGenerateAudio(text)
       .then(res => {
         asyncPlayFromUrl(res.recordingPath)
           .then(() => {
+            // startListening();
             resolve(res);
           })
           .catch(e => {
+            // startListening();
             reject(e);
           });
       })
-      .catch(e => reject(e));
+      .catch(e => {
+        // startListening();
+        reject(e);
+      });
   });
 }
 
@@ -153,6 +162,15 @@ function setupMediaSource(stream) {
 
 function processAudioBlob(blob) {
   stopListening();
+  if (processing) return; // if audio is processing, ignore input
+
+  // if we're not on the main page, don't even bother with processing & proceed
+  if (ui.getConvoStage() !== 'main') {
+    chat.setConversationStageName();
+    return;
+  }
+
+  processing = true;
   const formData = new FormData();
   formData.append('data', blob);
 
@@ -166,17 +184,19 @@ function processAudioBlob(blob) {
     contentType: false
   })
     .then(res => {
+      processing = false;
       ui.endProgress();
       ui.setAudioStatus('Audio processed successfully');
       chat.handleAudioProcessingSuccess(res);
-      startListening();
+      // startListening();
     })
     .catch(e => {
       console.log('post error', e);
+      processing = false;
       ui.endProgress();
       // ui.setUserText('Error processing audio.');
       chat.handleAudioProcessingError(e);
-      startListening();
+      // startListening();
     });
 }
 
@@ -227,9 +247,15 @@ function detectAudio() {
   }
 }
 
+function getListeningStatus() {
+  return listening === true;
+}
+
 function startListening() {
   console.log('start listening');
+  clearInterval(recordingInterval);
   recordingInterval = setInterval(detectAudio, detectAudioInterval);
+  listening = true;
   ui.setAudioStatus('Listening');
 }
 
@@ -237,6 +263,7 @@ function stopListening() {
   console.log('stop listening');
   clearInterval(recordingInterval);
   recordingInterval = null;
+  listening = false;
   ui.setAudioStatus('Waiting');
 }
 
@@ -326,3 +353,4 @@ exports.stopListening = stopListening;
 exports.playFromUrl = playFromUrl;
 exports.asyncPlayFromUrl = asyncPlayFromUrl;
 exports.asyncGenerateAndSay = asyncGenerateAndSay;
+exports.getListeningStatus = getListeningStatus;
