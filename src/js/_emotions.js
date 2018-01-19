@@ -125,7 +125,7 @@ function getNormalizedAverageEmotions(emotions) {
     0
   );
 
-  console.log(totalEmotionsVal);
+  // console.log(totalEmotionsVal);
 
   const normalizedEmotions = {};
 
@@ -144,14 +144,13 @@ function getNormalizedAverageEmotions(emotions) {
 }
 
 function getAverageEmotionsFromVideoHistory() {
-  console.log('videoEmotionsHistory', videoEmotionsHistory);
   if (videoEmotionsHistory.length === 0) return null;
   const sumEmotions = getSumEmotionsFromEmotionsHistory(videoEmotionsHistory);
-  console.log('sumEmotions', sumEmotions);
+  // console.log('sumEmotions', sumEmotions);
   const rawAvgEmotions = getRawAvgEmotionsFromSumEmotions(sumEmotions);
-  console.log('rawAvgEmotions', rawAvgEmotions);
+  // console.log('rawAvgEmotions', rawAvgEmotions);
   const normalizedEmotions = getNormalizedAverageEmotions(rawAvgEmotions);
-  console.log('normalizedEmotions', normalizedEmotions);
+  // console.log('normalizedEmotions', normalizedEmotions);
   return normalizedEmotions;
 }
 
@@ -164,7 +163,7 @@ function resetVideoEmotionsHistory() {
 }
 
 function getDominantSentimentFromNormalizedVals(normalizedVal) {
-  const threshold = 0.25;
+  const threshold = 0.5;
   if (normalizedVal < -1 * threshold) {
     return 'negative';
   } else if (normalizedVal < threshold) {
