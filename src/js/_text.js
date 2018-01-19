@@ -75,7 +75,7 @@ function getComparisonFeelingText(videoEmotions, textSentiment) {
       return `Interesting. My video analysis shows that you're feeling good but my text analysis leans to the negative. You're a tricky one.`;
       break;
     case 'neutral positive':
-      return `My video analysis of your response is fairly neutral, but my text analysis of your response is positive. Are you trying to talk yourself into being happy? (Just kidding).`;
+      return `My video analysis of your response is fairly neutral, but my text analysis of your response is positive. Are you trying to fool yourself? (Just kidding).`;
       break;
     case 'neutral neutral':
       return `Boring day, huh? Both my video and text analysis of your response are fairly neutral. At least you're consistent!`;

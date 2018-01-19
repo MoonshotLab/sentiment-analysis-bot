@@ -18,6 +18,5 @@ function run() {
 }
 
 $(window).on('load', function() {
-  // run();
-  ui.showConvoMain();
+  run();
 });

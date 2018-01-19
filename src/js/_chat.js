@@ -85,13 +85,6 @@ function handleAudioProcessingSuccess(res) {
     default:
       throw new Error('unknown conversation phase');
   }
-  // ui.setAudioAnalysis(getEmotionAnalysisHtml(res.emotions));
-  //
-  // setTimeout(() => {
-  //   ui.setAudioStatus('Listening...');
-  //   ui.setUserText();
-  //   ui.setAudioAnalysis();
-  // }, showUserTextTimeout);
 }
 
 function handleAudioProcessingError(error) {
@@ -101,15 +94,6 @@ function handleAudioProcessingError(error) {
     `I'm sorry, I didn't get that. Say again?`,
     `Sorry, once more? I promise I'm not pulling your leg`
   );
-  // setTimeout(() => {
-  //   ui.setAudioStatus('Listening...');
-  //   ui.setUserText();
-  //   ui.setAudioAnalysis();
-  // }, showUserTextTimeout);
-}
-
-function resetConversation() {
-  conversationPhase = 'start';
 }
 
 function setConversationStage(stage) {
@@ -145,6 +129,7 @@ function setConversationStageStart() {
 function setConversationStageName() {
   conversationPhase = 'name';
   ui.showConvoMain();
+  ui.showVideoChart();
   ui.setConversationStage('name');
   asyncBotAsk(
     `Hello, I'm Sal. What's your name?`,
@@ -157,6 +142,7 @@ function setConversationStageName() {
 function setConversationStageFeelings(nameText) {
   conversationPhase = 'feelings';
   ui.setConversationStage('feelings');
+  ui.hideCharts();
 
   // make sure name text doesn't contain `my name is` or `my name's`
   const name = text.formatNameStr(nameText);
@@ -171,6 +157,7 @@ function setConversationStageFeelings(nameText) {
 }
 
 function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
+  ui.hideCharts();
   audio.stopListening();
   // console.log(response, textSentimentScore);
   recording = false;
@@ -193,6 +180,8 @@ function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
     avgVideoEmotions,
     formattedTextSentiment
   );
+
+  ui.showCharts();
 
   console.log('comparisonFeelingText', comparisonFeelingText);
   asyncBotSay(comparisonFeelingText)
@@ -256,6 +245,7 @@ function setConverastionStageJoke(textSentimentScore = 0.5) {
 }
 
 function setConversationStageJokeAnalysis(response, textSentimentScore) {
+  ui.hideCharts();
   recording = false;
   updateVideoChart = false;
   const avgVideoEmotions = emotions.getAverageEmotionsFromVideoHistory();
@@ -265,6 +255,8 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
 
   chart.updateVideoData(avgVideoEmotions);
   chart.updateTextSentimentData(formattedTextSentiment);
+
+  ui.showCharts();
 
   const comparisonJokeText = text.getComparisonJokeText(
     avgVideoEmotions,
@@ -379,7 +371,8 @@ function resetConversation() {
   chart.resetCharts(true);
   audio.startListening();
   emotions.resetVideoEmotionsHistory();
-  ui.showConvoIntro();
+  ui.showPreloading();
+  setTimeout(ui.showConvoIntro, 5 * 1000);
 }
 
 exports.asyncInit = asyncInit;

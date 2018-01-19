@@ -59,6 +59,12 @@ function showConvoIntro() {
   $convoIntro.show();
 }
 
+function showPreloading() {
+  $convoIntro.hide();
+  $convoMain.hide();
+  $preloading.show();
+}
+
 function asyncInit() {
   return video
     .asyncSetupCamera($cameraRoot)
@@ -74,15 +80,6 @@ function setVideoStatus(status = '') {
 }
 function setAudioStatus(status = '') {
   $audioStatus.text(status);
-}
-
-function setVideoAnalysis(html = '') {
-  if (html === '') {
-    hideSection('video-analysis-wrap');
-  } else {
-    showSection('video-analysis-wrap');
-  }
-  $videoAnalysisWrap.html(html);
 }
 
 function setBotText(text = '') {
@@ -113,15 +110,6 @@ function setUserText(text = '') {
   }
 }
 
-function setAudioAnalysis(html = '') {
-  if (html === '') {
-    hideSection('text-analysis-wrap');
-  } else {
-    showSection('text-analysis-wrap');
-  }
-  $audioAnalysisWrap.html(html);
-}
-
 function showSection(sectionName) {
   $(`#${sectionName}`).fadeIn();
 }
@@ -138,34 +126,6 @@ function hideSections(sectionNames) {
   sectionNames.map(sectionName => hideSection(sectionName));
 }
 
-function hideAnalysisSections() {
-  hideSections(['video-analysis-wrap', 'text-analysis-wrap']);
-}
-
-function resetSection(sectionName) {
-  switch (sectionName) {
-    case 'video-analysis':
-      // setVideoAnalysis();
-      break;
-    case 'audio-analysis':
-      // setAudioAnalysis();
-      break;
-    case 'bot-text':
-      setBotText();
-      break;
-    case 'user-text':
-      setUserText();
-      break;
-    default:
-      console.log('cannot reset unknown section', sectionName);
-      break;
-  }
-}
-
-function resetSections(sectionNames) {
-  sectionNames.map(sectionName => resetSection(sectionName));
-}
-
 function startProgress() {
   console.log('start progress');
   $inProgress.css('visibility', 'visible');
@@ -178,18 +138,14 @@ function endProgress() {
 
 function setConversationStageStart() {
   showConvoIntro();
-  // showConvoMain(); // remove!
-  hideSections(['video-analysis-wrap', 'text-analysis-wrap']);
-  resetSections(['video-analysis', 'audio-analysis']);
+  // showConvoMain(); // fix remove!
+  hideCharts();
 
   setUserText();
-  setBotText('Say hello to start a conversation with Emobot');
   audio.startListening();
 }
 
 function setConversationStageFeelings() {
-  // hideSections(['video-analysis-wrap', 'text-analysis-wrap']);
-  // resetSections('video-analysis', 'audio-analysis');
   // setUserText();
   // setBotText("");
 }
@@ -221,13 +177,18 @@ function setConversationStage(stage) {
   }
 }
 
-function getVideoEmotionAnalysisHtml(emotionsObj) {
-  let html = '<ul>';
-  for (let emotion in emotionsObj) {
-    html += `<li>${emotion}: ${parseInt(emotionsObj[emotion] * 100)}%`;
-  }
-  html += '</ul>';
-  return html;
+function showCharts() {
+  $videoAnalysisSection.show();
+  $textAnalysisSection.show();
+}
+
+function hideCharts() {
+  $videoAnalysisSection.hide();
+  $textAnalysisSection.hide();
+}
+
+function showVideoChart() {
+  $videoAnalysisSection.show();
 }
 
 exports.asyncInit = asyncInit;
@@ -240,8 +201,10 @@ exports.setUserText = setUserText;
 exports.startProgress = startProgress;
 exports.endProgress = endProgress;
 exports.setConversationStage = setConversationStage;
-exports.getVideoEmotionAnalysisHtml = getVideoEmotionAnalysisHtml;
-exports.hideAnalysisSections = hideAnalysisSections;
 exports.showConvoIntro = showConvoIntro;
 exports.showConvoMain = showConvoMain;
 exports.getConvoStage = getConvoStage;
+exports.hideCharts = hideCharts;
+exports.showCharts = showCharts;
+exports.showPreloading = showPreloading;
+exports.showVideoChart = showVideoChart;

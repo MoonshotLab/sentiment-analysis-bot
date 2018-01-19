@@ -14,8 +14,6 @@ let frames = 0;
 function hookUpDetectorEvents(detector) {
   detector.addEventListener('onInitializeSuccess', e => {
     ui.setVideoStatus('Watching');
-    // ui.setVideoAnalysis('<h4>No face in frame</h4>');
-    // ui.setBotText(`Say "Start Conversation" to begin.`);
     chat.setConversationStage('start');
   });
 

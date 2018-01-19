@@ -174,10 +174,8 @@ function getDominantSentimentFromNormalizedVals(normalizedVal) {
   }
 }
 
-// exports.getVideoEmotionAnalysisHtml = getVideoEmotionAnalysisHtml;
 exports.getVideoEmotionsObj = getVideoEmotionsObj;
 exports.getFormattedTextSentiment = getFormattedTextSentiment;
-// exports.getAudioEmotionsArray = getAudioEmotionsArray
 exports.getAverageEmotionsFromVideoHistory = getAverageEmotionsFromVideoHistory;
 exports.rememberVideoEmotions = rememberVideoEmotions;
 exports.resetVideoEmotionsHistory = resetVideoEmotionsHistory;

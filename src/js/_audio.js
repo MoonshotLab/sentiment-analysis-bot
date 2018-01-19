@@ -167,7 +167,13 @@ function processAudioBlob(blob) {
 
   // if we're not on the main page, don't even bother with processing & proceed
   if (ui.getConvoStage() !== 'main') {
-    chat.setConversationStageName();
+    if (chat.getFaceStatus() === true) {
+      chat.setConversationStageName();
+    } else {
+      console.log('no face in frame, not starting');
+      startListening();
+    }
+
     return;
   }
 

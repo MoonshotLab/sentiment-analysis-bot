@@ -6,11 +6,12 @@ const $video = $videoWrapper.find('video');
 const video = $video[0];
 
 let activated = false;
-
-const videoPlayingClass = config.screensaver.videoPlayingClass;
 let screensaverTimeout = null;
 
+const videoPlayingClass = config.screensaver.videoPlayingClass;
+
 function playVideo() {
+  video.loop = true;
   video.play();
 }
 

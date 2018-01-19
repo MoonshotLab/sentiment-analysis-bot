@@ -116,7 +116,7 @@ function visualAnalysisChart(sketch) {
       }
 
       circleRadius = circleMaxRadius * lerpVal;
-      if (circleRadius > 0) {
+      if (true || circleRadius > 0) {
         sketch.ellipse(circleX, circleY, circleRadius, circleRadius);
         sketch.fill('white');
         sketch.rectMode(sketch.CENTER);
@@ -260,13 +260,10 @@ function setupCharts(videoChartWrapId, textSentimentChartWrapId) {
 }
 
 function updateVideoData(data = []) {
-  ui.showSection('video-analysis-wrap');
   videoP5.update(data);
 }
 
 function updateTextSentimentData(data = {}) {
-  ui.showSection('text-analysis-wrap');
-
   // invert negative so that high negative values are 1-radius rather than 0 so they're visible
   if ('name' in data && data.name === 'negative') {
     data.val = 1 - data.val;
@@ -277,7 +274,7 @@ function updateTextSentimentData(data = {}) {
 
 function resetCharts(hideSection = true) {
   if (hideSection === true) {
-    ui.hideAnalysisSections();
+    ui.hideCharts();
   }
 
   updateVideoData();

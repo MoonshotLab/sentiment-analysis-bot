@@ -6,8 +6,8 @@ module.exports = {
     ambientListeningWindowLength: 15 * 1000
   },
   chart: {
-    width: 300,
-    height: 300
+    width: 350,
+    height: 275
   },
   emotions: {
     emotionsMap: {
