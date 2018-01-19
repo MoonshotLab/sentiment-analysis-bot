@@ -25,6 +25,10 @@ let updateVideoChart = false;
 let conversationPhase = 'start';
 const conversation = config.chat.conversationMap;
 
+function clearRepeatTimeout() {
+  clearTimeout(repeatTimeout);
+}
+
 function asyncInit() {
   return new Promise((resolve, reject) => {
     resolve();
@@ -52,6 +56,8 @@ function processVideoFrame(faces) {
 }
 
 function handleAudioProcessingSuccess(res) {
+  clearTimeout(repeatTimeout);
+
   const userText = res.transcription;
   console.log(res);
 
@@ -89,8 +95,12 @@ function handleAudioProcessingSuccess(res) {
 }
 
 function handleAudioProcessingError(error) {
+  clearTimeout(repeatTimeout);
   console.log('error processing audio', error);
-  asyncBotAsk(`I'm sorry, I didn't get that. Say again?`);
+  asyncBotAsk(
+    `I'm sorry, I didn't get that. Say again?`,
+    `Sorry, once more? I promise I'm not pulling your leg`
+  );
   // setTimeout(() => {
   //   ui.setAudioStatus('Listening...');
   //   ui.setUserText();
@@ -136,7 +146,10 @@ function setConversationStageName() {
   conversationPhase = 'name';
   ui.showConvoMain();
   ui.setConversationStage('name');
-  asyncBotAsk(`Hello, I'm Sal. What's your name?`);
+  asyncBotAsk(
+    `Hello, I'm Sal. What's your name?`,
+    `I didn't catch that. What should I call you?`
+  );
   recording = false;
   updateVideoChart = true;
 }
@@ -148,7 +161,10 @@ function setConversationStageFeelings(nameText) {
   // make sure name text doesn't contain `my name is` or `my name's`
   const name = text.formatNameStr(nameText);
 
-  asyncBotAsk(`Hi ${_.capitalize(name)}. How are you feeling today?`);
+  asyncBotAsk(
+    `Hi ${utils.titleCase(name)}. How are you feeling today?`,
+    `I didn't catch that. How are you feeling today?`
+  );
   recording = true;
   updateVideoChart = false;
   emotions.resetVideoEmotionsHistory();
@@ -198,7 +214,8 @@ function setConversationStageJokeAsk() {
   ui.setConversationStage('joke-ask');
   chart.resetCharts(true);
   asyncBotAsk(
-    `Alright, next I'm going to tell you a joke. How does that sound?`
+    `Alright, next I'm going to tell you a joke. How does that sound?`,
+    `Sorry, I didn't get that. Are you up for a joke?`
   );
 }
 
@@ -231,7 +248,10 @@ function setConverastionStageJoke(textSentimentScore = 0.5) {
     })
     .then(() => {
       audio.startListening();
-      return asyncBotAsk(`What did you think of my joke?`);
+      return asyncBotAsk(
+        `What did you think of my joke?`,
+        `Sorry, I didn't get that. What did you think of my joke?`
+      );
     });
 }
 
@@ -246,11 +266,9 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
   chart.updateVideoData(avgVideoEmotions);
   chart.updateTextSentimentData(formattedTextSentiment);
 
-  console.log(formattedTextSentiment);
-
   const comparisonJokeText = text.getComparisonJokeText(
     avgVideoEmotions,
-    formattedTextSentiment[0]
+    formattedTextSentiment
   );
   asyncBotSay(comparisonJokeText)
     .then(() => {
@@ -268,14 +286,9 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
     });
 }
 
-function asyncBotAsk(text, isRepeat = false) {
+function asyncBotAsk(text, repeatText = text, isRepeat = false) {
   return new Promise((resolve, reject) => {
     clearTimeout(repeatTimeout);
-
-    if (isRepeat === true) {
-      console.log('repeat');
-      resetConversation();
-    }
 
     asyncBotSay(text)
       .then(() => {
@@ -284,9 +297,14 @@ function asyncBotAsk(text, isRepeat = false) {
         if (isRepeat !== true) {
           console.log('setting timeout for', config.chat.repeatTimeoutLength);
           repeatTimeout = setTimeout(() => {
-            console.log('timeout!');
-            asyncBotAsk(text, true);
-          }, config.repeatTimeoutLength);
+            console.log('repeat!');
+            asyncBotAsk(repeatText, null, true);
+          }, config.chat.repeatTimeoutLength);
+        } else {
+          repeatTimeout = setTimeout(() => {
+            console.log('reset!');
+            resetConversation();
+          }, config.chat.repeatTimeoutLength);
         }
         resolve();
       })
@@ -361,7 +379,7 @@ function resetConversation() {
   chart.resetCharts(true);
   audio.startListening();
   emotions.resetVideoEmotionsHistory();
-  showConvoIntro();
+  ui.showConvoIntro();
 }
 
 exports.asyncInit = asyncInit;
@@ -375,3 +393,4 @@ exports.setFaceStatus = setFaceStatus;
 exports.getFaceStatus = getFaceStatus;
 exports.processVideoFrame = processVideoFrame;
 exports.setConversationStageName = setConversationStageName;
+exports.clearRepeatTimeout = clearRepeatTimeout;

@@ -15,6 +15,11 @@ function randomPick(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
 
+function titleCase(str) {
+  return _.startCase(_.toLower(str));
+}
+
 exports.strHas = strHas;
 exports.mapRange = mapRange;
 exports.randomPick = randomPick;
+exports.titleCase = titleCase;

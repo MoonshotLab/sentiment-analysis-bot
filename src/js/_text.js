@@ -6,6 +6,9 @@ function formatNameStr(nameStr) {
   let lowerStr = _.toLower(nameStr);
   lowerStr = lowerStr.replace(`my name is`, '');
   lowerStr = lowerStr.replace(`my name's`, '');
+  lowerStr = lowerStr.replace(`i'm`, '');
+  lowerStr = lowerStr.replace(`i am`, '');
+  lowerStr = lowerStr.replace(`call me`, '');
   return lowerStr;
 }
 
@@ -21,11 +24,24 @@ function getNormalizedVideoSentiment(videoEmotions) {
   return normalizedVideoSentiment;
 }
 
-function getNormalizedTextSentiment(textSentiment) {
-  console.log('hi', textSentiment);
+function getNormalizedTextSentiment(
+  textSentiment = {
+    name: 'neutral',
+    val: 0.5
+  }
+) {
   let sentimentVal = 0;
+  console.log('hihi', textSentiment);
   if (!!textSentiment && 'val' in textSentiment)
     sentimentVal = textSentiment.val;
+  if (
+    'name' in textSentiment &&
+    textSentiment.name === 'negative' &&
+    textSentiment.val > 0.6
+  ) {
+    // negative got inverted, make sure it's actually negative
+    sentimentVal = 1 - sentimentVal;
+  }
   return utils.mapRange(sentimentVal, 0, 1, -1, 1); // -1 for negative, 0 for neutral, 1 for positive
 }
 
@@ -65,7 +81,7 @@ function getComparisonFeelingText(videoEmotions, textSentiment) {
       return `Boring day, huh? Both my video and text analysis of your response are fairly neutral. At least you're consistent!`;
       break;
     case 'neutral negative':
-      return `My video analysis of your response is fairly neutral, but my text analysis of your response is negative. Not trying to cry at work, huh?`;
+      return `My video analysis of your response is fairly neutral, but my text analysis of your response is negative. Rough day, huh?`;
       break;
     case 'negative positive':
       return `Interesting. My text analysis indicates a positive response, but my video analysis shows the opposite! Trying to talk yourself into being happy? (Just kidding).`;

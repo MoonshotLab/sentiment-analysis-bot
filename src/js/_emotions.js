@@ -84,14 +84,6 @@ function getVideoEmotionsObj(facesInfo) {
   return emotions;
 }
 
-function clearVideoEmotions() {
-  videoEmotions = [];
-}
-
-// function getAudioEmotions() {
-//   return audioEmotions;
-// }
-
 function getSumEmotionsFromEmotionsHistory(emotionsHistory) {
   const sumEmotions = {};
   const historyLength = emotionsHistory.length;
@@ -186,7 +178,6 @@ function getDominantSentimentFromNormalizedVals(normalizedVal) {
 exports.getVideoEmotionsObj = getVideoEmotionsObj;
 exports.getFormattedTextSentiment = getFormattedTextSentiment;
 // exports.getAudioEmotionsArray = getAudioEmotionsArray
-exports.clearVideoEmotions = clearVideoEmotions;
 exports.getAverageEmotionsFromVideoHistory = getAverageEmotionsFromVideoHistory;
 exports.rememberVideoEmotions = rememberVideoEmotions;
 exports.resetVideoEmotionsHistory = resetVideoEmotionsHistory;

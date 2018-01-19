@@ -150,6 +150,7 @@ function setupMediaSource(stream) {
 
     if (keepRecording === true) {
       console.log('keeping nonsilent recording');
+      chat.clearRepeatTimeout();
       processAudioBlob(blob);
     } else {
       console.log('discarding silent recording');
@@ -252,6 +253,10 @@ function getListeningStatus() {
 }
 
 function startListening() {
+  if (mediaRecorder.state === 'paused') {
+    mediaRecorder.resume();
+  }
+
   console.log('start listening');
   clearInterval(recordingInterval);
   recordingInterval = setInterval(detectAudio, detectAudioInterval);
@@ -260,6 +265,10 @@ function startListening() {
 }
 
 function stopListening() {
+  if (mediaRecorder.state === 'recording') {
+    mediaRecorder.pause();
+  }
+
   console.log('stop listening');
   clearInterval(recordingInterval);
   recordingInterval = null;
