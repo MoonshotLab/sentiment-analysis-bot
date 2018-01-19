@@ -260,16 +260,13 @@ body {
     color: $lightBlue;
   }
 
-  #bot-text {
-    font-size: 36px;
-  }
-
   #bot-text,
   #user-text {
     text-align: center;
     font-weight: 400;
     top: 50%;
     transform: translateY(-50%);
+    font-size: 24px;
   }
 
   #text-analysis-wrap {
