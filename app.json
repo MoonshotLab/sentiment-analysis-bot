@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "dokku": {
+      "predeploy": "touch /tmp/stats.json"
+    }
+  }
+}
