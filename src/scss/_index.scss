@@ -67,7 +67,7 @@ body {
       grid-template-areas:
         '. user-text .'
         'video-analysis camera audio-analysis'
-        'in-progress bot-text .';
+        'in-progress bot-text vol-indicator';
     }
 
     .in-progress {
@@ -76,6 +76,21 @@ body {
       img {
         max-width: 100px;
         max-height: 100px;
+      }
+    }
+
+    .vol-indicator {
+      grid-area: vol-indicator;
+
+      #vol-chart-wrap {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      canvas {
+        display: block;
+        margin: 0 auto;
       }
     }
   }

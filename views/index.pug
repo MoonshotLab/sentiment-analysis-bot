@@ -25,7 +25,6 @@ block content
         img.bubble(src='/img/filled-solid-bubble.png')
         h4#user-text
       section#camera-wrap
-        //- h4 Camera
         div#camera-root
       section#bot-text-wrap
         h4#bot-text
@@ -34,6 +33,8 @@ block content
         div#text-sentiment-chart-wrap.chart-wrap
       section.in-progress(style='visibility: hidden;')
         img(src='/img/loading.gif')
+      section.vol-indicator
+        div#vol-chart-wrap
   div#video-wrap
     video
       source(src='https://d32vnycoqqt3qz.cloudfront.net/loops/sal-loop-simple.mp4', type='video/mp4', loop)

@@ -3,6 +3,7 @@ const Promise = require('bluebird');
 const ui = require('./_ui');
 const chat = require('./_chat');
 const config = require('./_config');
+const chart = require('./_chart');
 
 let listening = false;
 let processing = false;
@@ -167,7 +168,8 @@ function processAudioBlob(blob) {
 
   // if we're not on the main page, don't even bother with processing & proceed
   if (ui.getConvoStage() !== 'main') {
-    if (chat.getFaceStatus() === true) {
+    if (chat.getFaceStatus() === true || true) {
+      // determine if we can rely on face status
       chat.setConversationStageName();
     } else {
       console.log('no face in frame, not starting');
@@ -219,6 +221,7 @@ function getEmotionAnalysisHtml(emotions) {
 // called each interval via setInterval
 function detectAudio() {
   const vol = Math.round(meter.volume * 100);
+  chart.updateVolData(vol);
   console.log('vol', vol);
 
   if (recording) {
@@ -271,6 +274,7 @@ function startListening() {
 }
 
 function stopListening() {
+  chart.updateVolData(0);
   if (mediaRecorder.state === 'recording') {
     mediaRecorder.pause();
   }

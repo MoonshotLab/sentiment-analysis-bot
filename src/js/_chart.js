@@ -12,6 +12,7 @@ let audioCanvas = null;
 
 let videoP5 = null;
 let textSentimentP5 = null;
+let volP5 = null;
 
 let updateVideoChart = false;
 let updateAudioChart = false;
@@ -20,6 +21,86 @@ let updateAudioChart = false;
 
 // figure these out?
 const emotionsMap = config.emotions.emotionsMap;
+
+function volChart(sketch) {
+  const lerpAmt = 0.15;
+  const outerMargin = 10;
+
+  const [volChartWidth, volChartHeight] = [100, 100];
+
+  const [innerWidth, innerHeight] = [
+    volChartWidth - outerMargin * 2,
+    volChartHeight - outerMargin * 2
+  ];
+  const [halfInnerWidth, halfInnerHeight] = [innerWidth / 2, innerHeight / 2];
+
+  let circleMaxRadius = 0;
+  if (volChartWidth < volChartHeight) {
+    circleMaxRadius = halfInnerWidth;
+  } else {
+    circleMaxRadius = halfInnerHeight;
+  }
+
+  const [circleX, circleY] = [halfInnerWidth, halfInnerHeight]; // since there's only one circle
+
+  let circleRadius = 0;
+
+  let callunaSansBlack = null;
+
+  let currentVolVal = 0;
+  let targetVolVal = 0;
+
+  sketch.preload = () => {
+    callunaSansBlack = sketch.loadFont('/fonts/calluna-sans-black.otf');
+  };
+
+  sketch.setup = () => {
+    sketch.createCanvas(volChartWidth, volChartHeight);
+    sketch.background(51);
+    sketch.textSize(16);
+    sketch.textFont(callunaSansBlack);
+    sketch.textAlign(sketch.CENTER, sketch.CENTER);
+    sketch.rectMode(sketch.CENTER);
+    sketch.ellipseMode(sketch.RADIUS);
+    sketch.strokeWeight(1);
+  };
+
+  sketch.draw = () => {
+    sketch.background(51);
+
+    const lerpVal = parseInt(sketch.lerp(currentVolVal, targetVolVal, lerpAmt));
+    if (lerpVal > config.audio.volThreshold) {
+      sketch.fill('#93D5D9');
+    } else {
+      sketch.fill('#C83E31');
+    }
+
+    circleRadius = circleMaxRadius * lerpVal / 100 * 4; // multiply radius so it's visible
+    if (circleRadius > circleMaxRadius) circleRadius = circleMaxRadius;
+
+    if (circleRadius > 0) {
+      sketch.ellipse(circleX, circleY, circleRadius, circleRadius);
+
+      sketch.fill('white');
+      sketch.rectMode(sketch.CENTER);
+
+      sketch.stroke(0);
+      sketch.text(
+        _.capitalize('vol.'),
+        circleX,
+        circleY - 1,
+        circleMaxRadius,
+        circleMaxRadius
+      );
+    }
+
+    currentVolVal = lerpVal;
+  };
+
+  sketch.update = newVal => {
+    targetVolVal = newVal || 0;
+  };
+}
 
 function visualAnalysisChart(sketch) {
   const emotionsBase = {
@@ -254,9 +335,18 @@ function textAnalysisChart(sketch) {
   };
 }
 
-function setupCharts(videoChartWrapId, textSentimentChartWrapId) {
+function setupCharts(
+  videoChartWrapId,
+  textSentimentChartWrapId,
+  volChartWrapId
+) {
   videoP5 = new p5(visualAnalysisChart, videoChartWrapId);
   textSentimentP5 = new p5(textAnalysisChart, textSentimentChartWrapId);
+  volP5 = new p5(volChart, volChartWrapId);
+}
+
+function updateVolData(data) {
+  volP5.update(data);
 }
 
 function updateVideoData(data = []) {
@@ -284,4 +374,5 @@ function resetCharts(hideSection = true) {
 exports.setupCharts = setupCharts;
 exports.updateVideoData = updateVideoData;
 exports.updateTextSentimentData = updateTextSentimentData;
+exports.updateVolData = updateVolData;
 exports.resetCharts = resetCharts;

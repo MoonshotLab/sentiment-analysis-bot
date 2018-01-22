@@ -21,6 +21,13 @@ const $videoAnalysisSection = $('#video-analysis-wrap');
 const videoChartWrapId = 'video-emotions-chart-wrap';
 // const $videoChartWrap = $(videoChartWrapId);
 
+const $textAnalysisSection = $('#text-analysis-wrap');
+// const $audioAnalysisWrap = $('#audio-analysis');
+const textChartWrapId = 'text-sentiment-chart-wrap';
+// const $audioChartWrap = $(textChartWrapId);
+
+const volChartWrapId = 'vol-chart-wrap';
+
 const $cameraSection = $('#camera-wrap');
 const $cameraRoot = $('#camera-root');
 
@@ -29,11 +36,6 @@ const $botText = $('#bot-text');
 
 const $userTextSection = $('#user-text-wrap');
 const $userText = $('#user-text');
-
-const $textAnalysisSection = $('#text-analysis-wrap');
-// const $audioAnalysisWrap = $('#audio-analysis');
-const textChartWrapId = 'text-sentiment-chart-wrap';
-// const $audioChartWrap = $(textChartWrapId);
 
 let userTextTimeout = null;
 
@@ -71,7 +73,7 @@ function asyncInit() {
     .then(audio.asyncSetupAudio)
     .then(video.startWatching)
     .then(() => {
-      chart.setupCharts(videoChartWrapId, textChartWrapId);
+      chart.setupCharts(videoChartWrapId, textChartWrapId, volChartWrapId);
     });
 }
 
