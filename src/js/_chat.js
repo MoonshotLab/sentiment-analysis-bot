@@ -97,7 +97,9 @@ function handleAudioProcessingError(error) {
   asyncBotAsk(
     `I'm sorry, I didn't get that. Say again?`,
     `Sorry, once more? I promise I'm not pulling your leg`
-  );
+  ).catch(e => {
+    console.log('error handling audio processing error');
+  });
 }
 
 function setConversationStage(stage) {
@@ -325,6 +327,7 @@ function asyncBotSay(text) {
 
     talking = true;
     audio.stopListening();
+
     audio
       .asyncGenerateAudio(text)
       .then(res => {
@@ -339,6 +342,8 @@ function asyncBotSay(text) {
       })
       .catch(e => {
         console.log('error saying', text, e);
+        location.reload(); // FIXME idk what is happening to get here
+
         talking = false;
         reject(e);
       });
@@ -380,6 +385,7 @@ function getFaceStatus() {
 }
 
 function resetConversation() {
+  audio.stopListening();
   console.log('resetting conversation');
   chart.resetCharts(true);
   emotions.resetVideoEmotionsHistory();

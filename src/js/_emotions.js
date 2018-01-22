@@ -49,7 +49,7 @@ function getFormattedTextSentiment(sentimentScore) {
 }
 
 function getVideoEmotionsObj(facesInfo) {
-  if (facesInfo.length == 0) return null;
+  if (facesInfo.length == 0) return {};
 
   // for now, only consider first face
   const emotions = facesInfo[0].emotions;
