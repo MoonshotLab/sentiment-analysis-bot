@@ -11,6 +11,22 @@ const neutralityThreshold = config.emotions.neutralityThreshold;
 
 let videoEmotionsHistory = [];
 
+function getNormalizedVideoSentiment(videoEmotions) {
+  let normalizedVideoSentiment = 0;
+
+  console.log('videoEmotions', videoEmotions);
+
+  if ('joy' in videoEmotions) normalizedVideoSentiment += videoEmotions['joy'];
+  if ('surprise' in videoEmotions)
+    normalizedVideoSentiment += videoEmotions['surprise'];
+  if ('sadness' in videoEmotions)
+    normalizedVideoSentiment -= videoEmotions['sadness'];
+  if ('anger' in videoEmotions)
+    normalizedVideoSentiment -= videoEmotions['anger'];
+
+  return normalizedVideoSentiment;
+}
+
 function getFormattedTextSentiment(sentimentScore) {
   console.log('sentiment score', sentimentScore);
   sentimentScore = parseInt(sentimentScore * 10) / 10;
@@ -143,3 +159,4 @@ exports.getAverageEmotionsFromVideoHistory = getAverageEmotionsFromVideoHistory;
 exports.rememberVideoEmotions = rememberVideoEmotions;
 exports.resetVideoEmotionsHistory = resetVideoEmotionsHistory;
 exports.getDominantSentimentFromNormalizedVals = getDominantSentimentFromNormalizedVals;
+exports.getNormalizedVideoSentiment = getNormalizedVideoSentiment;

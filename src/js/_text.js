@@ -14,23 +14,11 @@ function formatNameStr(nameStr) {
   return lowerStr;
 }
 
-function getNormalizedVideoSentiment(videoEmotions) {
-  let normalizedVideoSentiment = 0;
-
-  // console.log('videoEmotions', videoEmotions);
-
-  if ('joy' in videoEmotions) normalizedVideoSentiment += videoEmotions['joy'];
-  if ('sadness' in videoEmotions)
-    normalizedVideoSentiment -= videoEmotions['sadness'];
-
-  return normalizedVideoSentiment;
-}
-
 function getComparisonFeelingText(videoEmotions, textSentiment) {
   // console.log('videoEmotions before', videoEmotions);
   // console.log('textSentiment before', videoEmotions);
   const [normalizedVideoSentiment, normalizedTextSentiment] = [
-    getNormalizedVideoSentiment(videoEmotions),
+    emotions.getNormalizedVideoSentiment(videoEmotions),
     textSentiment.val
   ];
 
@@ -81,7 +69,9 @@ function getComparisonFeelingText(videoEmotions, textSentiment) {
 }
 
 function getComparisonJokeText(videoEmotions, textSentiment) {
-  const normalizedVideoSentiment = getNormalizedVideoSentiment(videoEmotions);
+  const normalizedVideoSentiment = emotions.getNormalizedVideoSentiment(
+    videoEmotions
+  );
   const normalizedTextSentiment = textSentiment.val; // sentiment is already [-1, 1]
 
   // compare video with text analysis
