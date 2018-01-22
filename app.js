@@ -27,6 +27,7 @@ http.listen(port, () => {
 });
 
 app.use('/', require('./routes/index'));
+app.use('/stats', require('./routes/stats'));
 app.use('/process', require('./routes/process'));
 app.use('/generate', require('./routes/generate'));
 app.use('*', (req, res) => {

@@ -9,6 +9,7 @@ const screensaver = require('./_screensaver');
 const config = require('./_config');
 const emotions = require('./_emotions');
 const chart = require('./_chart');
+const db = require('./_db');
 
 const screensaverTimeoutLength = config.chat.defaultScreensaverTimeoutLength; // ms
 
@@ -24,6 +25,8 @@ let updateVideoChart = false;
 
 let conversationPhase = 'start';
 const conversation = config.chat.conversationMap;
+
+let mostRecentJoke = null;
 
 function clearRepeatTimeout() {
   clearTimeout(repeatTimeout);
@@ -75,7 +78,7 @@ function handleAudioProcessingSuccess(res) {
       setConversationStageFeelingsAnalysis(userText, res.textSentimentScore);
       break;
     case 'joke-ask':
-      setConverastionStageJoke(res.textSentimentScore);
+      setConversationStageJoke(res.textSentimentScore);
       break;
     case 'joke':
       setConversationStageJokeAnalysis(userText, res.textSentimentScore);
@@ -208,13 +211,13 @@ function setConversationStageJokeAsk() {
   );
 }
 
-function setConverastionStageJoke(textSentimentScore = 0.5) {
+function setConversationStageJoke(textSentimentScore = 0) {
   audio.stopListening();
   conversationPhase = 'joke';
   ui.setConversationStage('joke');
 
   let response = '';
-  if (textSentimentScore < 0.4) {
+  if (textSentimentScore < -1 * 0.3) {
     response = `Well, too bad. There's no stopping me now.`;
   } else {
     response = `Alright, let's do it.`;
@@ -230,6 +233,8 @@ function setConverastionStageJoke(textSentimentScore = 0.5) {
       emotions.resetVideoEmotionsHistory();
 
       const joke = text.getRandomJoke();
+      mostRecentJoke = joke;
+
       return asyncBotSay(joke);
     })
     .then(() => {
@@ -248,10 +253,13 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
   ui.hideCharts();
   recording = false;
   updateVideoChart = false;
+
   const avgVideoEmotions = emotions.getAverageEmotionsFromVideoHistory();
   const formattedTextSentiment = emotions.getFormattedTextSentiment(
     textSentimentScore
   );
+
+  db.logJokeReaction(mostRecentJoke, formattedTextSentiment);
 
   chart.updateVideoData(avgVideoEmotions);
   chart.updateTextSentimentData(formattedTextSentiment);

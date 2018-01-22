@@ -156,7 +156,6 @@ function getRandomJoke() {
     `Who was the roundest knight at King Arthur's table? Sir Cumference.`,
     `Why did the chicken cross the playground? To get to the other slide.`,
     `I don't trust people with graph paper. They're always plotting something.`,
-    `How do you know if you are a pirate? You just arrrrr.`,
     `Why did the football coach shake the vending machine? Because he needed a quarterback.`,
     `What kind of shorts do clouds wear? Thunderpants.`
   ];
