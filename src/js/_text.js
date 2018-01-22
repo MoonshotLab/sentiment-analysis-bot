@@ -124,11 +124,22 @@ function getRandomJoke() {
     `How do you make holy water? You boil the hell out of it.`,
     `A three-legged dog walks into a bar and says to the bartender, 'I'm looking for the man who shot my paw.'`,
     `What did the Buddhist say to the hot dog vendor? Make me one with everything.`,
-    `Who was the roundest knight at King Arthur's table? Sir Cumference.`,
     `Why did the chicken cross the playground? To get to the other slide.`,
-    `I don't trust people with graph paper. They're always plotting something.`,
     `Why did the football coach shake the vending machine? Because he needed a quarterback.`,
-    `What kind of shorts do clouds wear? Thunderpants.`
+    `I'm reading a book about anti-gravity. It's impossible to put down!`,
+    `I just watched a documentary about beavers. It was the best dam show I ever saw!`,
+    `I bought some shoes from a drug dealer. I don't know what he laced them with, but I was tripping all day!`,
+    `Why do chicken coops only have two doors? Because if they had four, they would be chicken sedans!`,
+    `What do you call a cow with two legs? Lean beef. If the cow has no legs, then it’s ground beef.`,
+    `I’m only familiar with 25 letters in the English language. I don’t know why.`,
+    `Why couldn't the bike standup by itself? It was two tired.`,
+    `What do you call a dog that can do magic? A Labracadabrador.`,
+    `Why didn't the vampire attack Taylor Swift? She had bad blood.`,
+    `Why can't you hear a pterodactyl go to the bathroom? Because the pee is silent.`,
+    `You heard of that new band 1023MB? They're good but they haven't got a gig yet.`,
+    `What's the best part about living in Switzerland? I don't know, but the flag is a big plus.`,
+    `How many tickles does it take to make an octopus laugh? Ten-tickles.`,
+    `What do you call a factory that sells passable products? A satisfactory.`
   ];
 
   return utils.randomPick(jokes);
