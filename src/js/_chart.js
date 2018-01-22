@@ -19,9 +19,6 @@ let updateAudioChart = false;
 
 // let updateCharts = false;
 
-// figure these out?
-const emotionsMap = config.emotions.emotionsMap;
-
 function volChart(sketch) {
   const lerpAmt = 0.15;
   const outerMargin = 10;
@@ -203,7 +200,13 @@ function visualAnalysisChart(sketch) {
         sketch.rectMode(sketch.CENTER);
 
         sketch.stroke(0);
-        sketch.text(_.capitalize(emotionName), circleX, circleY - 2);
+        sketch.text(
+          _.capitalize(emotionName),
+          circleX,
+          circleY - 2,
+          circleMaxRadius,
+          circleMaxRadius
+        );
       }
 
       currentChartData[emotionName] = lerpVal;
@@ -292,7 +295,13 @@ function textAnalysisChart(sketch) {
       currentChartData.name = targetChartData.name;
 
       const currentVal = currentChartData.val || 0;
-      const targetVal = targetChartData.val || 0;
+
+      let targetVal = Math.abs(targetChartData.val) || 0;
+      if (currentChartData.name === 'neutral') {
+        // since neutral will be around 0, invert so it will be visible
+        targetVal = 1 - targetVal;
+      }
+
       const lerpVal =
         parseInt(sketch.lerp(currentVal, targetVal, lerpAmt) * 100) / 100;
 
@@ -319,7 +328,7 @@ function textAnalysisChart(sketch) {
         sketch.text(
           _.capitalize(currentChartData.name),
           circleX,
-          circleY + 4,
+          circleY,
           circleMaxRadius,
           circleMaxRadius
         );
@@ -354,11 +363,6 @@ function updateVideoData(data = []) {
 }
 
 function updateTextSentimentData(data = {}) {
-  // invert negative so that high negative values are 1-radius rather than 0 so they're visible
-  if ('name' in data && data.name === 'negative') {
-    data.val = 1 - data.val;
-  }
-
   textSentimentP5.update(data);
 }
 

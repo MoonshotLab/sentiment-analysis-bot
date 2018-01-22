@@ -9,31 +9,6 @@ module.exports = {
     width: 350,
     height: 275
   },
-  emotions: {
-    emotionsMap: {
-      neutral: {
-        color: 'darkgray'
-      },
-      anger: {
-        color: 'red'
-      },
-      joy: {
-        color: 'yellow'
-      },
-      sadness: {
-        color: 'blue'
-      },
-      surprise: {
-        color: 'mediumpurple'
-      },
-      positive: {
-        color: 'green'
-      },
-      negative: {
-        color: 'red'
-      }
-    }
-  },
   chat: {
     defaultScreensaverTimeoutLength: 2 * 60 * 1000,
     repeatTimeoutLength: 10 * 1000,

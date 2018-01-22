@@ -7,11 +7,10 @@ const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const upload = require('multer')({ dest: '/tmp/' });
 const speech = require('@google-cloud/speech');
-
-const indico = require('indico.io'); // text analysis
-indico.apiKey = process.env.INDICO_API_KEY;
+const language = require('@google-cloud/language');
 
 const speechClient = new speech.SpeechClient();
+const languageClient = new language.LanguageServiceClient();
 
 const uploadFieldSpec = [
   {
@@ -90,8 +89,21 @@ router.post('/', upload.fields(uploadFieldSpec), (req, res) => {
       .then(transcription => {
         transcription = transcription.trim();
         if (!!transcription && transcription.length > 0) {
-          indico
-            .sentiment(transcription)
+          languageClient
+            .analyzeSentiment({
+              document: {
+                content: transcription,
+                type: 'PLAIN_TEXT'
+              }
+            })
+            .then(results => {
+              try {
+                return results[0].documentSentiment.score;
+              } catch (e) {
+                console.log(e);
+                return 0;
+              }
+            })
             .then(textSentimentScore => {
               res.status(200).send({
                 transcription: transcription,
@@ -102,7 +114,7 @@ router.post('/', upload.fields(uploadFieldSpec), (req, res) => {
               console.log('Error getting text emotion analysis', e);
               res.status(200).send({
                 transcription: transcription,
-                emotions: null
+                textSentimentScore: 0
               });
             });
         } else {

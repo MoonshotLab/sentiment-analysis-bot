@@ -10,13 +10,6 @@ const emotionThreshold = 0.1;
 
 let videoEmotionsHistory = [];
 
-const emotionsMap = config.emotions.emotionsMap;
-
-function getEmotionColorByName(emotionName) {
-  if (emotionName in emotionsMap) return emotionsMap[emotionName].color;
-  throw new Error('unknown emotion', emotionName);
-}
-
 function getFormattedTextSentiment(sentimentScore) {
   console.log('sentiment score', sentimentScore);
   sentimentScore = parseInt(sentimentScore * 10) / 10;
@@ -24,9 +17,11 @@ function getFormattedTextSentiment(sentimentScore) {
   const formattedScore = [];
   let sentimentRating = null;
 
-  if (sentimentScore < 0.4) {
+  const neutralityThreshold = 0.3;
+
+  if (sentimentScore < -1 * neutralityThreshold) {
     sentimentRating = 'negative';
-  } else if (sentimentScore < 0.6) {
+  } else if (sentimentScore < neutralityThreshold) {
     sentimentRating = 'neutral';
   } else {
     sentimentRating = 'positive';
@@ -34,37 +29,9 @@ function getFormattedTextSentiment(sentimentScore) {
 
   return {
     name: sentimentRating,
-    val: sentimentScore,
-    color: getEmotionColorByName(sentimentRating)
+    val: sentimentScore
   };
 }
-
-// function getAudioEmotionsArray(emotionsObj) {
-//   const emotionsArray = [];
-//
-//   for (let emotionName in emotionsObj) {
-//     const emotionVal = parseInt(emotionsObj[emotionName] * 100) / 100;
-//     if (emotionVal > emotionThreshold) {
-//       emotionsArray.push({
-//         name: emotionName,
-//         val: emotionVal,
-//         color: getEmotionColorByName(emotionName)
-//       });
-//     }
-//   }
-//
-//   if (emotionsArray.length === 0) {
-//     return [
-//       {
-//         name: 'neutral',
-//         val: 0.5,
-//         color: getEmotionColorByName('neutral')
-//       }
-//     ];
-//   } else {
-//     return emotionsArray;
-//   }
-// }
 
 function getVideoEmotionsObj(facesInfo) {
   if (facesInfo.length == 0) return null;
@@ -110,8 +77,7 @@ function getRawAvgEmotionsFromSumEmotions(sumEmotions) {
       100;
     rawAvgEmotions.push({
       name: emotionName,
-      val: avgEmotionVal,
-      color: getEmotionColorByName(emotionName)
+      val: avgEmotionVal
     });
   }
 

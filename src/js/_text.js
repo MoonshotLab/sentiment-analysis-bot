@@ -48,8 +48,10 @@ function getNormalizedTextSentiment(
 function getComparisonFeelingText(videoEmotions, textSentiment) {
   // console.log('videoEmotions before', videoEmotions);
   // console.log('textSentiment before', videoEmotions);
-  const normalizedVideoSentiment = getNormalizedVideoSentiment(videoEmotions);
-  const normalizedTextSentiment = getNormalizedTextSentiment(textSentiment);
+  const [normalizedVideoSentiment, normalizedTextSentiment] = [
+    getNormalizedVideoSentiment(videoEmotions),
+    textSentiment.val
+  ];
 
   // console.log('normalizedVideoSentiment', normalizedVideoSentiment);
   // console.log('normalizedTextSentiment', normalizedTextSentiment);
@@ -57,7 +59,7 @@ function getComparisonFeelingText(videoEmotions, textSentiment) {
   // compare video with text analysis
   const [dominantVideoSentiment, dominantTextSentiment] = [
     emotions.getDominantSentimentFromNormalizedVals(normalizedVideoSentiment),
-    emotions.getDominantSentimentFromNormalizedVals(normalizedTextSentiment)
+    textSentiment.name
   ];
 
   console.log(normalizedVideoSentiment, normalizedTextSentiment);
