@@ -12,6 +12,7 @@ const chart = require('./_chart');
 const db = require('./_db');
 
 const screensaverTimeoutLength = config.chat.defaultScreensaverTimeoutLength; // ms
+const neutralityThreshold = config.emotions.neutralityThreshold;
 
 let faceInFrame = false;
 
@@ -136,7 +137,7 @@ function setConversationStageName() {
   ui.setConversationStage('name');
   asyncBotAsk(
     `Hello, I'm Sal. What's your name?`,
-    `I didn't catch that. What should I call you?`
+    `Sorry, I didn't catch that. What should I call you? Try speaking clearly and loudly.`
   );
   recording = false;
   updateVideoChart = true;
@@ -152,7 +153,7 @@ function setConversationStageFeelings(nameText) {
 
   asyncBotAsk(
     `Hi ${utils.titleCase(name)}. How are you feeling today?`,
-    `I didn't catch that. How are you feeling today?`
+    `Sorry, I didn't catch that. How are you feeling today? Try speaking clearly and loudly.`
   );
   recording = true;
   updateVideoChart = false;
@@ -205,9 +206,9 @@ function setConversationStageJokeAsk() {
   conversationPhase = 'joke-ask';
   ui.setConversationStage('joke-ask');
   chart.resetCharts(true);
-  asyncBotAsk(
+  return asyncBotAsk(
     `Alright, next I'm going to tell you a joke. How does that sound?`,
-    `Sorry, I didn't get that. Are you up for a joke?`
+    `Sorry, I didn't get that. Are you up for a joke? Try speaking clearly and loudly.`
   );
 }
 
@@ -217,13 +218,13 @@ function setConversationStageJoke(textSentimentScore = 0) {
   ui.setConversationStage('joke');
 
   let response = '';
-  if (textSentimentScore < -1 * 0.3) {
+  if (textSentimentScore < -1 * neutralityThreshold) {
     response = `Well, too bad. There's no stopping me now.`;
   } else {
     response = `Alright, let's do it.`;
   }
 
-  asyncBotSay(response)
+  return asyncBotSay(response)
     .then(() => {
       return Promise.delay(1.5 * 1000);
     })
@@ -244,8 +245,11 @@ function setConversationStageJoke(textSentimentScore = 0) {
       audio.startListening();
       return asyncBotAsk(
         `What did you think of my joke?`,
-        `Sorry, I didn't get that. What did you think of my joke?`
+        `Sorry, I didn't get that. What did you think of my joke? Try speaking clearly and loudly.`
       );
+    })
+    .catch(e => {
+      console.log(e);
     });
 }
 
