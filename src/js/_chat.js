@@ -317,6 +317,7 @@ function asyncBotAsk(text, repeatText = text, isRepeat = false) {
 function asyncBotSay(text) {
   return new Promise((resolve, reject) => {
     if (talking) reject(new Error('bot already talking'));
+    ui.showConvoMain(); // make sure
 
     talking = true;
     audio.stopListening();
@@ -377,10 +378,14 @@ function getFaceStatus() {
 function resetConversation() {
   console.log('resetting conversation');
   chart.resetCharts(true);
-  audio.startListening();
   emotions.resetVideoEmotionsHistory();
   ui.showPreloading();
-  setTimeout(ui.showConvoIntro, 5 * 1000);
+  setTimeout(restartConversation, 7.5 * 1000);
+}
+
+function restartConversation() {
+  ui.showConvoIntro();
+  audio.startListening();
 }
 
 exports.asyncInit = asyncInit;

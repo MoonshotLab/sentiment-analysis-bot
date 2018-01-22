@@ -7,6 +7,7 @@ const chart = require('./_chart');
 
 // let audioEmotions = [];
 const emotionThreshold = 0.1;
+const neutralityThreshold = config.emotions.neutralityThreshold;
 
 let videoEmotionsHistory = [];
 
@@ -16,8 +17,6 @@ function getFormattedTextSentiment(sentimentScore) {
 
   const formattedScore = [];
   let sentimentRating = null;
-
-  const neutralityThreshold = 0.3;
 
   if (sentimentScore < -1 * neutralityThreshold) {
     sentimentRating = 'negative';
@@ -129,10 +128,9 @@ function resetVideoEmotionsHistory() {
 }
 
 function getDominantSentimentFromNormalizedVals(normalizedVal) {
-  const threshold = 0.5;
-  if (normalizedVal < -1 * threshold) {
+  if (normalizedVal < -1 * neutralityThreshold) {
     return 'negative';
-  } else if (normalizedVal < threshold) {
+  } else if (normalizedVal < neutralityThreshold) {
     return 'neutral';
   } else {
     return 'positive';

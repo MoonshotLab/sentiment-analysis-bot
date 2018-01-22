@@ -36,6 +36,9 @@ module.exports = {
       }
     }
   },
+  emotions: {
+    neutralityThreshold: 0.3
+  },
   screensaver: {
     videoWrapperId: 'video-wrap',
     videoPlayingClass: 'video-playing'

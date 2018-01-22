@@ -1,6 +1,8 @@
 const _ = require('lodash');
+
 const utils = require('./_utils');
 const emotions = require('./_emotions');
+const config = require('./_config');
 
 function formatNameStr(nameStr) {
   let lowerStr = _.toLower(nameStr);
@@ -22,27 +24,6 @@ function getNormalizedVideoSentiment(videoEmotions) {
     normalizedVideoSentiment -= videoEmotions['sadness'];
 
   return normalizedVideoSentiment;
-}
-
-function getNormalizedTextSentiment(
-  textSentiment = {
-    name: 'neutral',
-    val: 0.5
-  }
-) {
-  let sentimentVal = 0;
-  // console.log('hihi', textSentiment);
-  if (!!textSentiment && 'val' in textSentiment)
-    sentimentVal = textSentiment.val;
-  if (
-    'name' in textSentiment &&
-    textSentiment.name === 'negative' &&
-    textSentiment.val > 0.6
-  ) {
-    // negative got inverted, make sure it's actually negative
-    sentimentVal = 1 - sentimentVal;
-  }
-  return utils.mapRange(sentimentVal, 0, 1, -1, 1); // -1 for negative, 0 for neutral, 1 for positive
 }
 
 function getComparisonFeelingText(videoEmotions, textSentiment) {
@@ -101,7 +82,7 @@ function getComparisonFeelingText(videoEmotions, textSentiment) {
 
 function getComparisonJokeText(videoEmotions, textSentiment) {
   const normalizedVideoSentiment = getNormalizedVideoSentiment(videoEmotions);
-  const normalizedTextSentiment = getNormalizedTextSentiment(textSentiment);
+  const normalizedTextSentiment = textSentiment.val; // sentiment is already [-1, 1]
 
   // compare video with text analysis
   const [dominantVideoSentiment, dominantTextSentiment] = [
