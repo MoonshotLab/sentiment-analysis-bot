@@ -148,6 +148,10 @@ function getComparisonJokeText(videoEmotions, textSentiment) {
 
 function getRandomJoke() {
   const jokes = [
+    `What time did the man go to the dentist? Tooth hurt-ee.`,
+    `A ham sandwich walks into a bar and orders a beer. Bartender says, 'Sorry we don't serve food here.'`,
+    `How do you make holy water? You boil the hell out of it.`,
+    `A three-legged dog walks into a bar and says to the bartender, 'I'm looking for the man who shot my paw.'`,
     `What did the Buddhist say to the hot dog vendor? Make me one with everything.`,
     `Who was the roundest knight at King Arthur's table? Sir Cumference.`,
     `Why did the chicken cross the playground? To get to the other slide.`,
