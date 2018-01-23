@@ -359,7 +359,11 @@ function updateVolData(data) {
 }
 
 function updateVideoData(data = []) {
-  videoP5.update(data);
+  if (data !== null) {
+    videoP5.update(data);
+  } else {
+    videoP5.update([]);
+  }
 }
 
 function updateTextSentimentData(data = {}) {

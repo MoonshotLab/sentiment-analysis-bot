@@ -47,8 +47,10 @@ function processVideoFrame(faces) {
     if (recording || updateVideoChart) {
       const processedEmotions = emotions.getVideoEmotionsObj(faces);
 
-      if (recording) emotions.rememberVideoEmotions(processedEmotions);
-      if (updateVideoChart) chart.updateVideoData(processedEmotions);
+      if (processedEmotions !== null) {
+        if (recording) emotions.rememberVideoEmotions(processedEmotions);
+        if (updateVideoChart) chart.updateVideoData(processedEmotions);
+      }
     }
   } else {
     if (updateVideoChart) chart.updateVideoData();

@@ -98,7 +98,7 @@ function getComparisonJokeText(videoEmotions, textSentiment) {
       return `My video analysis of your response is fairly neutral, but my text analysis of your response is positive. You wouldn't lie to me, would you?`;
       break;
     case 'neutral neutral':
-      return `Welp, looks like I'm a flop. Both my analysis of your text and visual response turn up neutral. I'll have to try a different joke next time.`;
+      return `Rats, looks like I'm a flop. Both my analysis of your text and visual response turn up neutral. I'll have to try a different joke next time.`;
       break;
     case 'neutral negative':
       return `My video analysis of your response is fairly neutral, but my text analysis of your response is negative. You wouldn't lie to me, would you?`;

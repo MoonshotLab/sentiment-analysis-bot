@@ -12,9 +12,9 @@ const neutralityThreshold = config.emotions.neutralityThreshold;
 let videoEmotionsHistory = [];
 
 function getNormalizedVideoSentiment(videoEmotions) {
-  let normalizedVideoSentiment = 0;
+  if (videoEmotions === null) return 0;
 
-  console.log('videoEmotions', videoEmotions);
+  let normalizedVideoSentiment = 0;
 
   if ('joy' in videoEmotions) normalizedVideoSentiment += videoEmotions['joy'];
   if ('surprise' in videoEmotions)
@@ -49,7 +49,7 @@ function getFormattedTextSentiment(sentimentScore) {
 }
 
 function getVideoEmotionsObj(facesInfo) {
-  if (facesInfo.length == 0) return {};
+  if (facesInfo.length == 0) return null;
 
   // for now, only consider first face
   const emotions = facesInfo[0].emotions;
