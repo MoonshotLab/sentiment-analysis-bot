@@ -14,6 +14,17 @@ function formatNameStr(nameStr) {
   return lowerStr;
 }
 
+function containsWakeWord(str = '') {
+  const lowerStr = _.toLower(str);
+  const wakeWords = ['hello', 'hi', 'start', 'begin', 'yo'];
+
+  for (let i = 0; i < wakeWords.length; i++) {
+    if (lowerStr.indexOf(wakeWords[i]) !== -1) return true;
+  }
+
+  return false;
+}
+
 function getComparisonFeelingText(videoEmotions, textSentiment) {
   // console.log('videoEmotions before', videoEmotions);
   // console.log('textSentiment before', videoEmotions);
@@ -149,3 +160,4 @@ exports.formatNameStr = formatNameStr;
 exports.getComparisonFeelingText = getComparisonFeelingText;
 exports.getRandomJoke = getRandomJoke;
 exports.getComparisonJokeText = getComparisonJokeText;
+exports.containsWakeWord = containsWakeWord;

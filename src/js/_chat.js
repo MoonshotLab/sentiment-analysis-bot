@@ -72,7 +72,14 @@ function handleAudioProcessingSuccess(res) {
 
   switch (conversationPhase) {
     case 'start':
-      setConversationStageName();
+      if (text.containsWakeWord(userText)) {
+        setConversationStageName();
+      } else {
+        console.log(
+          `"${userText}" does not contain wake word. Continuing to sleep.`
+        );
+        audio.startListening();
+      }
       break;
     case 'name':
       setConversationStageFeelings(userText);
@@ -96,12 +103,17 @@ function handleAudioProcessingSuccess(res) {
 function handleAudioProcessingError(error) {
   clearTimeout(repeatTimeout);
   console.log('error processing audio', error);
-  asyncBotAsk(
-    `I'm sorry, I didn't get that. Say again?`,
-    `Sorry, once more? I promise I'm not pulling your leg`
-  ).catch(e => {
-    console.log('error handling audio processing error');
-  });
+  if (ui.getConvoStage() === 'main') {
+    asyncBotAsk(
+      `I'm sorry, I didn't get that. Say again?`,
+      `Sorry, once more? I promise I'm not pulling your leg`
+    ).catch(e => {
+      console.log('error handling audio processing error');
+    });
+  } else {
+    console.log('error processing audio, ignoring');
+    audio.startListening();
+  }
 }
 
 function setConversationStage(stage) {

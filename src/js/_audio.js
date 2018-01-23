@@ -166,19 +166,6 @@ function processAudioBlob(blob) {
   stopListening();
   if (processing) return; // if audio is processing, ignore input
 
-  // if we're not on the main page, don't even bother with processing & proceed
-  if (ui.getConvoStage() !== 'main') {
-    if (chat.getFaceStatus() === true || true) {
-      // determine if we can rely on face status
-      chat.setConversationStageName();
-    } else {
-      console.log('no face in frame, not starting');
-      startListening();
-    }
-
-    return;
-  }
-
   processing = true;
   const formData = new FormData();
   formData.append('data', blob);
