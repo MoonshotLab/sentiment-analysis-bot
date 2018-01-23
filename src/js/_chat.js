@@ -371,7 +371,8 @@ function keepAwake() {
 function goToSleep() {
   screensaver.start();
   audio.stopListening();
-  resetConversation();
+
+  setTimeout(resetConversation, 2 * 1000); // give enough time for screen to fade out
 }
 
 function wakeUp() {

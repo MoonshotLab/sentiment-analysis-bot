@@ -50,18 +50,21 @@ function getConvoStage() {
 }
 
 function showConvoMain() {
+  audio.startListening();
   $preloading.hide();
   $convoIntro.hide();
   $convoMain.show();
 }
 
 function showConvoIntro() {
+  audio.stopListening();
   $preloading.hide();
   $convoMain.hide();
   $convoIntro.show();
 }
 
 function showPreloading() {
+  audio.stopListening();
   $convoIntro.hide();
   $convoMain.hide();
   $preloading.show();

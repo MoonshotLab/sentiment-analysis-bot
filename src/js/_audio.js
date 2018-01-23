@@ -4,6 +4,7 @@ const ui = require('./_ui');
 const chat = require('./_chat');
 const config = require('./_config');
 const chart = require('./_chart');
+const screensaver = require('./_screensaver');
 
 let listening = false;
 let processing = false;
@@ -164,6 +165,16 @@ function setupMediaSource(stream) {
 
 function processAudioBlob(blob) {
   stopListening();
+
+  const screensaverWasActivated = screensaver.isActivated(); // store before keeping awake bc that will wake it up
+
+  chat.keepAwake();
+
+  if (screensaverWasActivated) {
+    // don't process if screensaver was activated
+    return;
+  }
+
   if (processing) return; // if audio is processing, ignore input
 
   processing = true;
