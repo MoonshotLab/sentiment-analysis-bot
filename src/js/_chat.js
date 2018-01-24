@@ -402,10 +402,11 @@ function getFaceStatus() {
 function resetConversation() {
   audio.stopListening();
   console.log('resetting conversation');
-  chart.resetCharts(true);
-  emotions.resetVideoEmotionsHistory();
-  ui.showPreloading();
-  setTimeout(restartConversation, 7.5 * 1000);
+  location.reload();
+  // chart.resetCharts(true);
+  // emotions.resetVideoEmotionsHistory();
+  // ui.showPreloading();
+  // setTimeout(restartConversation, 7.5 * 1000);
 }
 
 function restartConversation() {
