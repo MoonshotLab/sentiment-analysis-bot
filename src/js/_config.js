@@ -1,6 +1,6 @@
 module.exports = {
   audio: {
-    volThreshold: 20,
+    volThreshold: 15,
     detectAudioInterval: 200,
     waitAfterVolumeLength: 0.5 * 1000,
     ambientListeningWindowLength: 15 * 1000

@@ -200,13 +200,7 @@ function visualAnalysisChart(sketch) {
         sketch.rectMode(sketch.CENTER);
 
         sketch.stroke(0);
-        sketch.text(
-          _.capitalize(emotionName),
-          circleX,
-          circleY - 2,
-          circleMaxRadius,
-          circleMaxRadius
-        );
+        sketch.text(_.capitalize(emotionName), circleX, circleY);
       }
 
       currentChartData[emotionName] = lerpVal;
@@ -224,7 +218,7 @@ function visualAnalysisChart(sketch) {
       sketch.rectMode(sketch.CENTER);
 
       sketch.stroke(0);
-      sketch.text(_.capitalize('neutral'), circleX, circleY - 2);
+      sketch.text(_.capitalize('neutral'), circleX, circleY);
     }
   };
 
@@ -325,13 +319,7 @@ function textAnalysisChart(sketch) {
         sketch.rectMode(sketch.CENTER);
 
         sketch.stroke(0);
-        sketch.text(
-          _.capitalize(currentChartData.name),
-          circleX,
-          circleY,
-          circleMaxRadius,
-          circleMaxRadius
-        );
+        sketch.text(_.capitalize(currentChartData.name), circleX, circleY);
       }
 
       currentChartData.val = lerpVal;
