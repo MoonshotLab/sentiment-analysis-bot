@@ -29,6 +29,21 @@ const conversation = config.chat.conversationMap;
 
 let mostRecentJoke = null;
 
+function setRepeatTimeout(repeatText) {
+  console.log('setting timeout for', config.chat.repeatTimeoutLength);
+  repeatTimeout = setTimeout(() => {
+    console.log('repeat!');
+    asyncBotAsk(repeatText, null, true);
+  }, config.chat.repeatTimeoutLength);
+}
+
+function setRefreshTimeout() {
+  repeatTimeout = setTimeout(() => {
+    console.log('reset!');
+    resetConversation();
+  }, config.chat.repeatTimeoutLength);
+}
+
 function clearRepeatTimeout() {
   clearTimeout(repeatTimeout);
 }
@@ -43,6 +58,7 @@ function processVideoFrame(faces) {
   const newFaceStatus = faces.length > 0;
   if (newFaceStatus === true) {
     keepAwake();
+    audio.setFaceInFrameThisRecording();
 
     if (recording || updateVideoChart) {
       const processedEmotions = emotions.getVideoEmotionsObj(faces);
@@ -105,7 +121,7 @@ function handleAudioProcessingError(error) {
   console.log('error processing audio', error);
   if (ui.getConvoStage() === 'main') {
     asyncBotAsk(
-      `I'm sorry, I didn't get that. Say again?`,
+      `I'm sorry, I didn't get that. Say again? Please wait until I'm done talking and speak loudly and clearly.`,
       `Sorry, once more? I promise I'm not pulling your leg`
     ).catch(e => {
       console.log('error handling audio processing error');
@@ -209,7 +225,7 @@ function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
       return Promise.delay(2 * 1000);
     })
     .then(() => {
-      setConversationStageJokeAsk();
+      return setConversationStageJokeAsk();
     })
     .catch(e => {
       console.log(e);
@@ -218,7 +234,6 @@ function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
 
 function setConversationStageJokeAsk() {
   console.log('joke ask');
-  audio.startListening();
   conversationPhase = 'joke-ask';
   ui.setConversationStage('joke-ask');
   chart.resetCharts(true);
@@ -239,6 +254,8 @@ function setConversationStageJoke(textSentimentScore = 0) {
   } else {
     response = `Alright, let's do it.`;
   }
+
+  console.log('3');
 
   return asyncBotSay(response)
     .then(() => {
@@ -301,7 +318,6 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
     })
     .then(() => {
       // RESET EVERYTHING!
-      // location.reload(); // FIXME
       resetConversation();
     });
 }
@@ -315,16 +331,9 @@ function asyncBotAsk(text, repeatText = text, isRepeat = false) {
         audio.startListening();
 
         if (isRepeat !== true) {
-          console.log('setting timeout for', config.chat.repeatTimeoutLength);
-          repeatTimeout = setTimeout(() => {
-            console.log('repeat!');
-            asyncBotAsk(repeatText, null, true);
-          }, config.chat.repeatTimeoutLength);
+          setRepeatTimeout(repeatText);
         } else {
-          repeatTimeout = setTimeout(() => {
-            console.log('reset!');
-            resetConversation();
-          }, config.chat.repeatTimeoutLength);
+          setRefreshTimeout();
         }
         resolve();
       })
@@ -332,6 +341,18 @@ function asyncBotAsk(text, repeatText = text, isRepeat = false) {
         reject(e);
       });
   });
+}
+
+function unableToSeeUser() {
+  setRefreshTimeout();
+  asyncBotSay(
+    `Unfortunately, I'm unable to detect any faces in the frame. Please take a step forward if you are able.`
+  )
+    .then(audio.startListening)
+    .catch(e => {
+      console.log(e);
+      audio.startListening();
+    });
 }
 
 function asyncBotSay(text) {
@@ -372,7 +393,7 @@ function goToSleep() {
   screensaver.start();
   audio.stopListening();
 
-  setTimeout(resetConversation, 2 * 1000); // give enough time for screen to fade out
+  // setTimeout(resetConversation, 2 * 1000); // give enough time for screen to fade out
 }
 
 function wakeUp() {
@@ -426,3 +447,4 @@ exports.getFaceStatus = getFaceStatus;
 exports.processVideoFrame = processVideoFrame;
 exports.setConversationStageName = setConversationStageName;
 exports.clearRepeatTimeout = clearRepeatTimeout;
+exports.unableToSeeUser = unableToSeeUser;

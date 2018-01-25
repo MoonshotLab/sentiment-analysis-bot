@@ -1,4 +1,5 @@
 const config = require('./_config');
+const audio = require('./_audio');
 
 const $body = $('body');
 const $videoWrapper = $(`#${config.screensaver.videoWrapperId}`);
@@ -29,6 +30,7 @@ function start() {
   playVideo();
   $body.addClass(videoPlayingClass);
   activated = true;
+  audio.stopListening();
 }
 
 function stop() {
@@ -36,6 +38,7 @@ function stop() {
   stopVideo();
   $body.removeClass(videoPlayingClass);
   activated = false;
+  audio.startListening();
 }
 
 function isActivated() {

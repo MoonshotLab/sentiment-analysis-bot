@@ -9,6 +9,8 @@ const screensaver = require('./_screensaver');
 let listening = false;
 let processing = false;
 
+let faceInFrameThisRecording = false;
+
 let recordingInterval = null; // reference to setInterval
 
 let audioContext = null;
@@ -24,6 +26,10 @@ const volThreshold = config.audio.volThreshold; // softer than this will be cons
 const detectAudioInterval = config.audio.detectAudioInterval; // ms
 const waitAfterVolumeLength = config.audio.waitAfterVolumeLength; // ms
 const ambientListeningWindowLength = config.audio.ambientListeningWindowLength; // ms
+
+function setFaceInFrameThisRecording() {
+  faceInFrameThisRecording = true;
+}
 
 function asyncGenerateAudio(text) {
   return $.ajax({
@@ -152,12 +158,18 @@ function setupMediaSource(stream) {
 
     if (keepRecording === true) {
       console.log('keeping nonsilent recording');
-      chat.clearRepeatTimeout();
-      processAudioBlob(blob);
+      if (faceInFrameThisRecording === true) {
+        chat.clearRepeatTimeout();
+        processAudioBlob(blob);
+      } else {
+        console.log('no face in frame this question, not processing');
+        // chat.unableToSeeUser();
+      }
     } else {
       console.log('discarding silent recording');
     }
 
+    faceInFrameThisRecording = false; // reset memory of seen face
     keepRecording = false;
     blob = null; // reset blob to make sure memory isn't leaking
   };
@@ -167,8 +179,6 @@ function processAudioBlob(blob) {
   stopListening();
 
   const screensaverWasActivated = screensaver.isActivated(); // store before keeping awake bc that will wake it up
-
-  chat.keepAwake();
 
   if (screensaverWasActivated) {
     // don't process if screensaver was activated
@@ -191,6 +201,7 @@ function processAudioBlob(blob) {
     contentType: false
   })
     .then(res => {
+      chat.keepAwake(); // only keep awake if audio is understood
       processing = false;
       ui.endProgress();
       ui.setAudioStatus('Audio processed successfully');
@@ -371,3 +382,4 @@ exports.playFromUrl = playFromUrl;
 exports.asyncPlayFromUrl = asyncPlayFromUrl;
 exports.asyncGenerateAndSay = asyncGenerateAndSay;
 exports.getListeningStatus = getListeningStatus;
+exports.setFaceInFrameThisRecording = setFaceInFrameThisRecording;

@@ -10,7 +10,7 @@ module.exports = {
     height: 275
   },
   chat: {
-    defaultScreensaverTimeoutLength: 2 * 60 * 1000,
+    defaultScreensaverTimeoutLength: 60 * 1000,
     repeatTimeoutLength: 10 * 1000,
     conversationMap: {
       start: {
