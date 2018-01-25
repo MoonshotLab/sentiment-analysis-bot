@@ -255,8 +255,6 @@ function setConversationStageJoke(textSentimentScore = 0) {
     response = `Alright, let's do it.`;
   }
 
-  console.log('3');
-
   return asyncBotSay(response)
     .then(() => {
       return Promise.delay(1.5 * 1000);
