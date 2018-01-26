@@ -70,6 +70,14 @@ function showPreloading() {
   $preloading.show();
 }
 
+function showCameraFeed() {
+  $cameraSection.show();
+}
+
+function hideCameraFeed() {
+  $cameraSection.hide();
+}
+
 function asyncInit() {
   return video
     .asyncSetupCamera($cameraRoot)
@@ -144,6 +152,7 @@ function endProgress() {
 function setConversationStageStart() {
   showConvoIntro();
   // showConvoMain(); // fix remove!
+  hideCameraFeed();
   hideCharts();
 
   setUserText();
@@ -170,7 +179,6 @@ function setConversationStage(stage) {
       setConversationStageJokeAsk();
     case 'joke':
       setConversationStageJoke();
-      break;
       break;
     case 'ad':
       break;
@@ -213,3 +221,5 @@ exports.hideCharts = hideCharts;
 exports.showCharts = showCharts;
 exports.showPreloading = showPreloading;
 exports.showVideoChart = showVideoChart;
+exports.showCameraFeed = showCameraFeed;
+exports.hideCameraFeed = hideCameraFeed;

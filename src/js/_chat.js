@@ -104,7 +104,11 @@ function handleAudioProcessingSuccess(res) {
       setConversationStageFeelingsAnalysis(userText, res.textSentimentScore);
       break;
     case 'joke-ask':
-      setConversationStageJoke(res.textSentimentScore);
+      console.log('1');
+      setConversationStageJoke(res.textSentimentScore).then(() => {
+        console.log('3');
+      });
+      console.log('2');
       break;
     case 'joke':
       setConversationStageJokeAnalysis(userText, res.textSentimentScore);
@@ -165,14 +169,18 @@ function setConversationStageStart() {
 function setConversationStageName() {
   conversationPhase = 'name';
   ui.showConvoMain();
-  ui.showVideoChart();
+  // ui.showVideoChart();
   ui.setConversationStage('name');
-  asyncBotAsk(
-    `Hello, I'm Sal. What's your name?`,
-    `Sorry, I didn't catch that. What should I call you? Try speaking clearly and loudly.`
-  );
   recording = false;
   updateVideoChart = true;
+  asyncBotSay(
+    `Hello, I'm Sal. I was created by Moonshot to showcase sentiment analysis technology.`
+  ).then(() => {
+    return asyncBotAsk(
+      `Over the course of a short conversation, I can watch and listen to try and detect your emotions. To begin, what should I call you?`,
+      `Sorry, I didn't catch that. What should I call you?`
+    );
+  });
 }
 
 function setConversationStageFeelings(nameText) {
@@ -182,11 +190,21 @@ function setConversationStageFeelings(nameText) {
 
   // make sure name text doesn't contain `my name is` or `my name's`
   const name = text.formatNameStr(nameText);
-
-  asyncBotAsk(
-    `Hi ${utils.titleCase(name)}. How are you feeling today?`,
-    `Sorry, I didn't catch that. How are you feeling today? Try speaking clearly and loudly.`
-  );
+  asyncBotSay(
+    `Hi ${utils.titleCase(
+      name
+    )}. Next, I'm going to start analyzing your emotions.`
+  )
+    .then(() => {
+      ui.showCameraFeed();
+      return Promise.delay(2 * 1000);
+    })
+    .then(() => {
+      return asyncBotAsk(
+        `How are you feeling today?`,
+        `Sorry, I didn't catch that. How are you feeling today?`
+      );
+    });
   recording = true;
   updateVideoChart = false;
   emotions.resetVideoEmotionsHistory();
@@ -274,6 +292,7 @@ function setConversationStageJoke(textSentimentScore = 0) {
     })
     .then(() => {
       audio.startListening();
+      console.log('pre');
       return asyncBotAsk(
         `What did you think of my joke?`,
         `Sorry, I didn't get that. What did you think of my joke? Try speaking clearly and loudly.`
