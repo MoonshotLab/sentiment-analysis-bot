@@ -70,12 +70,20 @@ function showPreloading() {
   $preloading.show();
 }
 
-function showCameraFeed() {
-  $cameraSection.show();
+function showCameraFeed(fade = false) {
+  if (fade === true) {
+    $cameraSection.fadeIn();
+  } else {
+    $cameraSection.show();
+  }
 }
 
-function hideCameraFeed() {
-  $cameraSection.hide();
+function hideCameraFeed(fade = false) {
+  if (fade === true) {
+    $cameraSection.fadeOut();
+  } else {
+    $cameraSection.hide();
+  }
 }
 
 function asyncInit() {
@@ -190,18 +198,40 @@ function setConversationStage(stage) {
   }
 }
 
-function showCharts() {
-  $videoAnalysisSection.show();
-  $textAnalysisSection.show();
+function showCharts(fade = false) {
+  if (fade === true) {
+    $videoAnalysisSection.fadeIn();
+    $textAnalysisSection.fadeIn();
+  } else {
+    $videoAnalysisSection.show();
+    $textAnalysisSection.show();
+  }
 }
 
-function hideCharts() {
-  $videoAnalysisSection.hide();
-  $textAnalysisSection.hide();
+function hideCharts(fade = false) {
+  if (fade === true) {
+    $videoAnalysisSection.fadeOut();
+    $textAnalysisSection.fadeOut();
+  } else {
+    $videoAnalysisSection.hide();
+    $textAnalysisSection.hide();
+  }
 }
 
-function showVideoChart() {
-  $videoAnalysisSection.show();
+function showVideoChart(fade = true) {
+  if (fade === true) {
+    $videoAnalysisSection.fadeIn();
+  } else {
+    $videoAnalysisSection.show();
+  }
+}
+
+function showTextChart(fade = true) {
+  if (fade === true) {
+    $textAnalysisSection.fadeIn();
+  } else {
+    $textAnalysisSection.show();
+  }
 }
 
 exports.asyncInit = asyncInit;
@@ -221,5 +251,6 @@ exports.hideCharts = hideCharts;
 exports.showCharts = showCharts;
 exports.showPreloading = showPreloading;
 exports.showVideoChart = showVideoChart;
+exports.showTextChart = showTextChart;
 exports.showCameraFeed = showCameraFeed;
 exports.hideCameraFeed = hideCameraFeed;

@@ -174,44 +174,69 @@ function setConversationStageName() {
   recording = false;
   updateVideoChart = true;
   asyncBotSay(
-    `Hello, I'm Sal. I was created by Moonshot to showcase sentiment analysis technology.`
-  ).then(() => {
-    return asyncBotAsk(
-      `Over the course of a short conversation, I can watch and listen to try and detect your emotions. To begin, what should I call you?`,
-      `Sorry, I didn't catch that. What should I call you?`
-    );
-  });
+    `Hello, I'm Sal. Over the course of a short conversation, I can watch and listen to you speak to detect your emotions.`
+  )
+    .then(() => {
+      return Promise.delay(0.5 * 1000);
+    })
+    .then(() => {
+      return asyncBotAsk(
+        `To begin, what's your name?`,
+        `Sorry, I didn't catch that. What's your name?`
+      );
+    });
 }
 
 function setConversationStageFeelings(nameText) {
   conversationPhase = 'feelings';
   ui.setConversationStage('feelings');
-  ui.hideCharts();
+  ui.hideCharts(true);
 
   // make sure name text doesn't contain `my name is` or `my name's`
   const name = text.formatNameStr(nameText);
   asyncBotSay(
-    `Hi ${utils.titleCase(
-      name
-    )}. Next, I'm going to start analyzing your emotions.`
+    `Hi ${utils.titleCase(name)}. Next, I'll start analyzing your emotions.`
   )
     .then(() => {
-      ui.showCameraFeed();
-      return Promise.delay(2 * 1000);
+      ui.showCameraFeed(true); // fade
+      return Promise.delay(1 * 1000);
     })
     .then(() => {
+      ui.showVideoChart(true);
+      return asyncBotSay(
+        'This graph shows my analysis of your facial expressions.'
+      );
+    })
+    .then(() => {
+      return Promise.delay(1.5 * 1000);
+    })
+    .then(() => {
+      ui.showTextChart(true);
+      return asyncBotSay(
+        `And this is where I'll show my analysis of your speech content.`
+      );
+    })
+    .then(() => {
+      return Promise.delay(1.5 * 1000);
+    })
+    .then(() => {
+      ui.hideCharts(true);
+      recording = true;
+      updateVideoChart = false;
+      emotions.resetVideoEmotionsHistory();
+
       return asyncBotAsk(
-        `How are you feeling today?`,
+        `Let's continue. How are you feeling today?`,
         `Sorry, I didn't catch that. How are you feeling today?`
       );
+    })
+    .catch(e => {
+      console.log(e);
     });
-  recording = true;
-  updateVideoChart = false;
-  emotions.resetVideoEmotionsHistory();
 }
 
 function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
-  ui.hideCharts();
+  ui.hideCharts(true);
   audio.stopListening();
   // console.log(response, textSentimentScore);
   recording = false;
@@ -235,7 +260,7 @@ function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
     formattedTextSentiment
   );
 
-  ui.showCharts();
+  ui.showCharts(true);
 
   console.log('comparisonFeelingText', comparisonFeelingText);
   asyncBotSay(comparisonFeelingText)
@@ -304,7 +329,7 @@ function setConversationStageJoke(textSentimentScore = 0) {
 }
 
 function setConversationStageJokeAnalysis(response, textSentimentScore) {
-  ui.hideCharts();
+  ui.hideCharts(true);
   recording = false;
   updateVideoChart = false;
 
@@ -318,7 +343,7 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
   chart.updateVideoData(avgVideoEmotions);
   chart.updateTextSentimentData(formattedTextSentiment);
 
-  ui.showCharts();
+  ui.showCharts(true);
 
   const comparisonJokeText = text.getComparisonJokeText(
     avgVideoEmotions,
