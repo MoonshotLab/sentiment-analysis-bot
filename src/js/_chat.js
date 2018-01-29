@@ -65,7 +65,9 @@ function processVideoFrame(faces) {
 
       if (processedEmotions !== null) {
         if (recording) emotions.rememberVideoEmotions(processedEmotions);
-        if (updateVideoChart) chart.updateVideoData(processedEmotions);
+        if (updateVideoChart) {
+          chart.updateVideoData(processedEmotions);
+        }
       }
     }
   } else {
@@ -125,7 +127,7 @@ function handleAudioProcessingError(error) {
   console.log('error processing audio', error);
   if (ui.getConvoStage() === 'main') {
     asyncBotAsk(
-      `I'm sorry, I didn't get that. Say again? Please wait until I'm done talking and speak loudly and clearly.`,
+      `I'm sorry, I didn't get that. Say again?`,
       `Sorry, once more? I promise I'm not pulling your leg`
     ).catch(e => {
       console.log('error handling audio processing error');
@@ -184,13 +186,16 @@ function setConversationStageName() {
         `To begin, what's your name?`,
         `Sorry, I didn't catch that. What's your name?`
       );
+    })
+    .catch(e => {
+      console.log(e);
     });
 }
 
 function setConversationStageFeelings(nameText) {
   conversationPhase = 'feelings';
   ui.setConversationStage('feelings');
-  ui.hideCharts(true);
+  // ui.hideCharts(true);
 
   // make sure name text doesn't contain `my name is` or `my name's`
   const name = text.formatNameStr(nameText);
@@ -220,7 +225,8 @@ function setConversationStageFeelings(nameText) {
       return Promise.delay(1.5 * 1000);
     })
     .then(() => {
-      ui.hideCharts(true);
+      // ui.hideCharts(true);
+      chart.resetCharts();
       recording = true;
       updateVideoChart = false;
       emotions.resetVideoEmotionsHistory();
@@ -236,7 +242,7 @@ function setConversationStageFeelings(nameText) {
 }
 
 function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
-  ui.hideCharts(true);
+  // ui.hideCharts(true);
   audio.stopListening();
   // console.log(response, textSentimentScore);
   recording = false;
@@ -260,12 +266,12 @@ function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
     formattedTextSentiment
   );
 
-  ui.showCharts(true);
+  // ui.showCharts(true);
 
   console.log('comparisonFeelingText', comparisonFeelingText);
   asyncBotSay(comparisonFeelingText)
     .then(() => {
-      return Promise.delay(2 * 1000);
+      return Promise.delay(1.5 * 1000);
     })
     .then(() => {
       return setConversationStageJokeAsk();
@@ -279,10 +285,10 @@ function setConversationStageJokeAsk() {
   console.log('joke ask');
   conversationPhase = 'joke-ask';
   ui.setConversationStage('joke-ask');
-  chart.resetCharts(true);
+  chart.resetCharts();
   return asyncBotAsk(
     `Alright, next I'm going to tell you a joke. How does that sound?`,
-    `Sorry, I didn't get that. Are you up for a joke? Try speaking clearly and loudly.`
+    `Sorry, I didn't get that. Are you up for a joke?`
   );
 }
 
@@ -305,6 +311,7 @@ function setConversationStageJoke(textSentimentScore = 0) {
     .then(() => {
       recording = true;
       updateVideoChart = false;
+      chart.resetCharts();
       emotions.resetVideoEmotionsHistory();
 
       const joke = text.getRandomJoke();
@@ -320,7 +327,7 @@ function setConversationStageJoke(textSentimentScore = 0) {
       console.log('pre');
       return asyncBotAsk(
         `What did you think of my joke?`,
-        `Sorry, I didn't get that. What did you think of my joke? Try speaking clearly and loudly.`
+        `Sorry, I didn't get that. What did you think of my joke?`
       );
     })
     .catch(e => {
@@ -329,7 +336,7 @@ function setConversationStageJoke(textSentimentScore = 0) {
 }
 
 function setConversationStageJokeAnalysis(response, textSentimentScore) {
-  ui.hideCharts(true);
+  // ui.hideCharts(true);
   recording = false;
   updateVideoChart = false;
 
@@ -343,7 +350,7 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
   chart.updateVideoData(avgVideoEmotions);
   chart.updateTextSentimentData(formattedTextSentiment);
 
-  ui.showCharts(true);
+  // ui.showCharts(true);
 
   const comparisonJokeText = text.getComparisonJokeText(
     avgVideoEmotions,
@@ -351,7 +358,7 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
   );
   asyncBotSay(comparisonJokeText)
     .then(() => {
-      return Promise.delay(2 * 1000);
+      return Promise.delay(1 * 1000);
     })
     .then(() => {
       return asyncBotSay(

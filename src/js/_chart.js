@@ -139,6 +139,16 @@ function visualAnalysisChart(sketch) {
 
   let callunaSansBlack = null;
 
+  let showEmotions = false;
+
+  sketch.showEmotions = () => {
+    showEmotions = true;
+  };
+
+  sketch.hideEmotions = () => {
+    showEmotions = false;
+  };
+
   sketch.preload = () => {
     callunaSansBlack = sketch.loadFont('/fonts/calluna-sans-black.otf');
   };
@@ -194,7 +204,7 @@ function visualAnalysisChart(sketch) {
       }
 
       circleRadius = circleMaxRadius * lerpVal;
-      if (true || circleRadius > 0) {
+      if (showEmotions === true && circleRadius > 0) {
         sketch.ellipse(circleX, circleY, circleRadius, circleRadius);
         sketch.fill('white');
         sketch.rectMode(sketch.CENTER);
@@ -207,7 +217,7 @@ function visualAnalysisChart(sketch) {
     });
 
     sketch.stroke(0);
-    if (neutral === true) {
+    if (showEmotions === true && neutral === true) {
       sketch.background(51);
       sketch.fill('#C7B299');
       circleX = halfInnerWidth;
@@ -263,6 +273,15 @@ function textAnalysisChart(sketch) {
   let circleRadius = circleMaxRadius;
 
   let callunaSansBlack = null;
+  let showEmotions = false;
+
+  sketch.showEmotions = () => {
+    showEmotions = true;
+  };
+
+  sketch.hideEmotions = () => {
+    showEmotions = false;
+  };
 
   sketch.preload = () => {
     callunaSansBlack = sketch.loadFont('/fonts/calluna-sans-black.otf');
@@ -312,7 +331,7 @@ function textAnalysisChart(sketch) {
       }
 
       circleRadius = circleMaxRadius * lerpVal;
-      if (circleRadius > 0) {
+      if (circleRadius > 0 && showEmotions === true) {
         sketch.ellipse(circleX, circleY, circleRadius, circleRadius);
 
         sketch.fill('white');
@@ -347,6 +366,7 @@ function updateVolData(data) {
 }
 
 function updateVideoData(data = []) {
+  showVideoEmotions();
   if (data !== null) {
     videoP5.update(data);
   } else {
@@ -354,17 +374,33 @@ function updateVideoData(data = []) {
   }
 }
 
+function hideEmotions() {
+  videoP5.hideEmotions();
+  textSentimentP5.hideEmotions();
+}
+
+function showVideoEmotions() {
+  videoP5.showEmotions();
+}
+
+function showTextSentimentEmotions() {
+  textSentimentP5.showEmotions();
+}
+
+function showEmotions() {
+  showVideoEmotions();
+  showTextSentimentEmotions();
+}
+
 function updateTextSentimentData(data = {}) {
+  showTextSentimentEmotions();
   textSentimentP5.update(data);
 }
 
-function resetCharts(hideSection = true) {
-  if (hideSection === true) {
-    ui.hideCharts();
-  }
-
+function resetCharts() {
   updateVideoData();
   updateTextSentimentData();
+  hideEmotions();
 }
 
 exports.setupCharts = setupCharts;
@@ -372,3 +408,5 @@ exports.updateVideoData = updateVideoData;
 exports.updateTextSentimentData = updateTextSentimentData;
 exports.updateVolData = updateVolData;
 exports.resetCharts = resetCharts;
+exports.hideEmotions = hideEmotions;
+exports.showEmotions = showEmotions;
