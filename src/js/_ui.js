@@ -107,11 +107,11 @@ function setAudioStatus(status = '') {
 }
 
 function showBotSpeaking() {
-  $botSpeaking.fadeIn();
+  $botSpeaking.addClass('speaking');
 }
 
 function hideBotSpeaking() {
-  $botSpeaking.fadeOut();
+  $botSpeaking.removeClass('speaking');
 }
 
 function setBotText(text = '') {
