@@ -31,6 +31,9 @@ const volChartWrapId = 'vol-chart-wrap';
 const $cameraSection = $('#camera-wrap');
 const $cameraRoot = $('#camera-root');
 
+const $botSpeakingSection = $('#bot-speaking-wrap');
+const $botSpeaking = $('#bot-speaking'); // img
+
 const $botTextSection = $('#bot-text-wrap');
 const $botText = $('#bot-text');
 
@@ -101,6 +104,14 @@ function setVideoStatus(status = '') {
 }
 function setAudioStatus(status = '') {
   $audioStatus.text(status);
+}
+
+function showBotSpeaking() {
+  $botSpeaking.fadeIn();
+}
+
+function hideBotSpeaking() {
+  $botSpeaking.fadeOut();
 }
 
 function setBotText(text = '') {
@@ -254,3 +265,5 @@ exports.showVideoChart = showVideoChart;
 exports.showTextChart = showTextChart;
 exports.showCameraFeed = showCameraFeed;
 exports.hideCameraFeed = hideCameraFeed;
+exports.showBotSpeaking = showBotSpeaking;
+exports.hideBotSpeaking = hideBotSpeaking;

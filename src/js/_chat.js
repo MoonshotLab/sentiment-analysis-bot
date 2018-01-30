@@ -415,12 +415,14 @@ function asyncBotSay(text) {
     audio
       .asyncGenerateAudio(text)
       .then(res => {
-        ui.setBotText(text);
+        // ui.setBotText(text);
+        ui.showBotSpeaking();
         return audio.asyncPlayFromUrl(res.recordingPath);
       })
       .then(res => {
         console.log('bot say success');
         talking = false;
+        ui.hideBotSpeaking();
 
         resolve();
       })

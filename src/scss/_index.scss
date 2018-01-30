@@ -67,7 +67,7 @@ body {
       grid-template-areas:
         '. user-text .'
         'video-analysis camera audio-analysis'
-        'in-progress bot-text vol-indicator';
+        'in-progress bot-speaking vol-indicator';
     }
 
     .in-progress {
@@ -251,7 +251,17 @@ body {
     }
   }
 
+  #bot-speaking-wrap {
+    grid-area: bot-speaking;
+
+    img {
+      display: none;
+      width: 100%;
+    }
+  }
+
   #bot-text-wrap {
+    display: none;
     // background-color: papayawhip;
     grid-area: bot-text;
     // display: none;
