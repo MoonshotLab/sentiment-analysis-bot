@@ -107,10 +107,11 @@ function asyncSetupCamera($cameraRoot) {
   return new Promise((resolve, reject) => {
     // ui.setVideoStatus('Initializing');
     try {
-      const faceMode = affdex.FaceDetectorMode.LARGE_FACES;
+      // const faceMode = affdex.FaceDetectorMode.LARGE_FACES;
+      const faceMode = affdex.FaceDetectorMode.SMALL_FACES;
 
       // check camera size with https://webrtchacks.github.io/WebRTC-Camera-Resolution/
-      const [width, height] = [1920, 1080];
+      const [width, height] = [800, 600];
       detector = new affdex.CameraDetector(
         $cameraRoot[0],
         width,
