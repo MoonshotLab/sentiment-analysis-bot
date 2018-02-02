@@ -106,11 +106,7 @@ function handleAudioProcessingSuccess(res) {
       setConversationStageFeelingsAnalysis(userText, res.textSentimentScore);
       break;
     case 'joke-ask':
-      console.log('1');
-      setConversationStageJoke(res.textSentimentScore).then(() => {
-        console.log('3');
-      });
-      console.log('2');
+      setConversationStageJoke(res.textSentimentScore);
       break;
     case 'joke':
       setConversationStageJokeAnalysis(userText, res.textSentimentScore);
@@ -274,37 +270,32 @@ function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
       return Promise.delay(1.5 * 1000);
     })
     .then(() => {
-      return setConversationStageJokeAsk();
+      return setConversationStageJoke();
     })
     .catch(e => {
       console.log(e);
     });
 }
 
-function setConversationStageJokeAsk() {
-  console.log('joke ask');
-  conversationPhase = 'joke-ask';
-  ui.setConversationStage('joke-ask');
-  chart.resetCharts();
-  return asyncBotAsk(
-    `Alright, next I'm going to tell you a joke. How does that sound?`,
-    `Sorry, I didn't get that. Are you up for a joke?`
-  );
-}
+// function setConversationStageJokeAsk() {
+//   console.log('joke ask');
+//   conversationPhase = 'joke-ask';
+//   ui.setConversationStage('joke-ask');
+//   chart.resetCharts();
+//   return asyncBotAsk(
+//     `Alright, next I'm going to tell you a joke. How does that sound?`,
+//     `Sorry, I didn't get that. Are you up for a joke?`
+//   );
+// }
 
-function setConversationStageJoke(textSentimentScore = 0) {
+function setConversationStageJoke() {
   audio.stopListening();
   conversationPhase = 'joke';
   ui.setConversationStage('joke');
 
-  let response = '';
-  if (textSentimentScore < -1 * neutralityThreshold) {
-    response = `Well, too bad. There's no stopping me now.`;
-  } else {
-    response = `Alright, let's do it.`;
-  }
-
-  return asyncBotSay(response)
+  return asyncBotSay(
+    `Alright, next I'm going to tell you a joke. I'm still working on my delivery, so go easy on me.`
+  )
     .then(() => {
       return Promise.delay(1.5 * 1000);
     })
