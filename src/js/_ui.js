@@ -131,8 +131,8 @@ function setUserText(text = '') {
     showSection('user-text-wrap');
 
     // reset user text after certain amount of time
-    const timeoutMsPerChar = 200; // adjust?
-    setTimeout(setUserText, text.length * 200, '');
+    const timeoutMsPerChar = 225; // adjust?
+    setTimeout(setUserText, text.length * timeoutMsPerChar, '');
   }
 
   if (text !== '') {
