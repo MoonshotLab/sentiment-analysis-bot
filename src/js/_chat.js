@@ -105,16 +105,15 @@ function handleAudioProcessingSuccess(res) {
     case 'feelings':
       setConversationStageFeelingsAnalysis(userText, res.textSentimentScore);
       break;
-    case 'joke-ask':
-      setConversationStageJoke(res.textSentimentScore);
-      break;
+    // case 'joke-ask':
+    //   setConversationStageJoke();
+    //   break;
     case 'joke':
       setConversationStageJokeAnalysis(userText, res.textSentimentScore);
       break;
-    case 'ad':
-      break;
     default:
-      throw new Error('unknown conversation phase');
+      console.log('unknown conversation phase', conversationPhase);
+      break;
   }
 }
 
@@ -143,8 +142,6 @@ function setConversationStage(stage) {
     case 'feelings':
       break;
     case 'joke':
-      break;
-    case 'ad':
       break;
     case 'end':
       break;
@@ -292,6 +289,7 @@ function setConversationStageJoke() {
   audio.stopListening();
   conversationPhase = 'joke';
   ui.setConversationStage('joke');
+  chart.resetCharts();
 
   return asyncBotSay(
     `Alright, next I'm going to tell you a joke. I'm still working on my delivery, so go easy on me.`
@@ -315,7 +313,6 @@ function setConversationStageJoke() {
     })
     .then(() => {
       audio.startListening();
-      console.log('pre');
       return asyncBotAsk(
         `What did you think of my joke?`,
         `Sorry, I didn't get that. What did you think of my joke?`
