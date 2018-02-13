@@ -10,6 +10,7 @@ const config = require('./_config');
 const emotions = require('./_emotions');
 const chart = require('./_chart');
 const db = require('./_db');
+const log = require('./_log');
 
 const screensaverTimeoutLength = config.chat.defaultScreensaverTimeoutLength; // ms
 const neutralityThreshold = config.emotions.neutralityThreshold;
@@ -241,27 +242,20 @@ function setConversationStageFeelingsAnalysis(response, textSentimentScore) {
   recording = false;
   updateVideoChart = false;
   const avgVideoEmotions = emotions.getAverageEmotionsFromVideoHistory();
-  console.log('textsentimentscore before', textSentimentScore);
   const formattedTextSentiment = emotions.getFormattedTextSentiment(
     textSentimentScore
   );
 
-  console.log('avgVideoEmotions before', avgVideoEmotions);
   chart.updateVideoData(avgVideoEmotions);
-  console.log('avgVideoEmotions after', avgVideoEmotions);
-
-  console.log('formattedTextSentiment before', formattedTextSentiment);
   chart.updateTextSentimentData(formattedTextSentiment);
-  console.log('formattedTextSentiment after', formattedTextSentiment);
 
   const comparisonFeelingText = text.getComparisonFeelingText(
     avgVideoEmotions,
     formattedTextSentiment
   );
 
-  // ui.showCharts(true);
+  log.recordFeelingReaction(response, formattedTextSentiment, avgVideoEmotions);
 
-  console.log('comparisonFeelingText', comparisonFeelingText);
   asyncBotSay(comparisonFeelingText)
     .then(() => {
       return Promise.delay(1.5 * 1000);
@@ -344,6 +338,14 @@ function setConversationStageJokeAnalysis(response, textSentimentScore) {
     avgVideoEmotions,
     formattedTextSentiment
   );
+
+  log.recordJokeReaction(
+    mostRecentJoke,
+    response,
+    formattedTextSentiment,
+    avgVideoEmotions
+  );
+
   asyncBotSay(comparisonJokeText)
     .then(() => {
       return Promise.delay(1 * 1000);

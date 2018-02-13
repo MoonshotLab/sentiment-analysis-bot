@@ -16,6 +16,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(autoReap);
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -27,6 +28,7 @@ http.listen(port, () => {
 });
 
 app.use('/', require('./routes/index'));
+app.use('/log', require('./routes/log'));
 app.use('/stats', require('./routes/stats'));
 app.use('/process', require('./routes/process'));
 app.use('/generate', require('./routes/generate'));
