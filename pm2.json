@@ -1,0 +1,6 @@
+{
+  "name": "sal",
+  "script": "app.js",
+  "watch": true,
+  "autorestart": true
+}
