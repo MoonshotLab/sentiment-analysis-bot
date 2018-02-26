@@ -2,6 +2,11 @@
 
 Web app deployed at https://sal.moonshot.cloud/. Sal engages users in a brief conversation, observing their emotions via video and text analysis.
 
+### Installation
+* `SAL` Automator app in [Releases](https://github.com/MoonshotLab/sentiment-analysis-bot/releases/download/1.0/SAL.app.zip).
+* Depends on Chrome.
+* Chrome Kiosk will only open fullscreen and gain focus if no other Chrome windows are currently open. Otherwise it'll just be added as a tab to the most recently used window.
+
 ### Notes
 * Deployed via Dokku.
 * Uses Google Cloud [Speech API](https://cloud.google.com/speech/) for transcription and [Natural Language API](https://cloud.google.com/natural-language/) for text sentiment analysis.
@@ -15,6 +20,12 @@ Web app deployed at https://sal.moonshot.cloud/. Sal engages users in a brief co
 * POST `/process` -> converts audio webm to flac via ffmpeg before transcribing via Google Cloud.
 * POST `/generate` -> takes text input and returns audio file of speech synthesis via Polly.
 * POST `/stats/log-joke` -> records joke response.
+
+### Local Dev
+* Clone repo
+* `yarn`
+* Configure `.env` and `keyfile.json` as below.
+* `yarn dev` for live reload of client js / scss.
 
 ### Env
 Add a `.env` with the following:
@@ -42,5 +53,4 @@ You must also have a `keyfile.json` at the root (or wherever you specify in the 
   "auth_provider_x509_cert_url": "",
   "client_x509_cert_url": ""
 }
-
 ```
